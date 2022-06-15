@@ -10,9 +10,8 @@ module "load_balancer_security" {
       from_port   = var.port
       to_port     = var.port
       protocol    = "tcp"
-      cidr_blocks = "0.0.0.0/0"
+      security_group_id = var.vpc_security_group_id
     }
   ]
-
   egress_rules = ["all-all"]
 }

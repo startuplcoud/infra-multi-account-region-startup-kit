@@ -1,30 +1,23 @@
-
 format:
 	cd infra && terraform fmt -check
 	cd infra && terraform fmt -recursive
 	cd terragrunt && terragrunt hclfmt
-
 validate:
-	pass
-
+	cd terragrunt && terragrunt run-all validate
 plan:
-	pass
-
+	cd terragrunt && terragrunt run-all plan
 apply:
-	pass
-
+	cd terragrunt && terragrunt run-all apply
 destroy:
-	pass
-
+	cd terragrunt && terragrunt run-all destroy
 plan-module:
-	pass
+	cd terragrunt && terragrunt run-all plan --terragrunt-include-dir $(directory)
 
 apply-module:
-	pass
+	cd terragrunt && terragrunt run-all apply --terragrunt-include-dir $(directory)
 
 destroy-module:
-	pass
-
+	cd terragrunt && terragrunt run-all destroy --terragrunt-include-dir $(directory)
 clean-cache:
-	pass
+	find . -type d -name ".terragrunt-cache" -prune -exec rm -rf {} \;
 

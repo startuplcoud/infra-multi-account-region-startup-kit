@@ -5,18 +5,20 @@ on:
       - main
 
 jobs:
-  init-env:
-    name: plan
+  init-packages:
+    name: init packages
     runs-on: ubuntu-latest
     steps:
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+
       - name: Setup Terragrunt
         uses: autero1/action-terragrunt@v1.1.0
         with:
           terragrunt_version: 0.37.3
-      - name: setup terraform
-        uses: hashicorp/setup-terraform@v2
-      # https://github.com/tenable/terrascan-action
+
       - name: setup terrascan
+        # https://github.com/tenable/terrascan-action
         id: terrascan
         uses: tenable/terrascan-action@main
         with:
@@ -25,21 +27,16 @@ jobs:
           policy_type: 'aws'
           only_warn: true
           sarif_upload: true
-          #non_recursive:
-          #iac_dir:
-          #policy_path:
-          #skip_rules:
-          #config_path:
-          #webhook_url:
-          #webhook_token:
-      # https://github.com/infracost/actions
+
       - name: Setup Infracost
-      # See https://github.com/infracost/actions/tree/master/setup for other inputs
+        # https://github.com/infracost/actions
+        # https://github.com/infracost/actions/tree/master/setup for other inputs
         uses: infracost/actions/setup@v2
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
-      # https://github.com/bridgecrewio/checkov-action
-      - name: Run Checkov action
+
+      - name: Run checkov action
+        # https://github.com/bridgecrewio/checkov-action
         id: checkov
         uses: bridgecrewio/checkov-action@master
 
@@ -53,19 +50,18 @@ jobs:
         uses: terraform-linters/setup-tflint@v1
         with:
           tflink_version: v0.29.0
-      - name: Setup tfsec
-        uses:
+#      - name: Setup tfsec
+#        uses:
 
 
-  validate:
-    needs: ['init-env']
+  validate-packages:
+    needs: ['init-packages']
     runs-on: ubuntu-latest
     steps:
-      -
-        #    - name: checkout
-#      uses: actions/checkout@v3
-#      with:
-#        ref: main
+      - name: checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
 #      - name: terragunt validate inputs
 #        run: terragunt validate-inputs --terragrunt-strict-validate
 #

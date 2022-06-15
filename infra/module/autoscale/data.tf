@@ -23,5 +23,4 @@ data "template_cloudinit_config" "init_config" {
   }
 }
 
-data "aws_availability_zones" "zones" {
-}
+data "aws_availability_zones" "zones" {}

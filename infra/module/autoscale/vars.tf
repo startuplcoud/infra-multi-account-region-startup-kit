@@ -20,3 +20,7 @@ variable "private_subnets" {
 variable "port" {
   type = string
 }
+
+variable "vpc_security_group_id" {
+  type = string
+}
