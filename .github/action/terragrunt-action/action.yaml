@@ -11,6 +11,9 @@ inputs:
     default: 'false'
     required: false
     description: apply the module or not
+  aws-region:
+    required: true
+    description: aws region
 runs:
   using: "composite"
   steps:
@@ -26,6 +29,7 @@ runs:
       with:
         role-to-assume: ${{ inputs.role-to-assume }}
         role-session-name: ${{ inputs.role-session-name }}
+        aws-region: ${{ inputs.aws-region }}
 
     - name: terragrunt validate
       shell: bash

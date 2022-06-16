@@ -7,6 +7,7 @@ on:
 env:
   role-to-assume: arn:aws:iam::${{ secrets.PROD_AWS_ACCOUNT_ID }}:role/terragrunt
   role-session-name: github-action
+  aws-region: us-east-1
 
 jobs:
   terragrunt-action:
@@ -23,6 +24,7 @@ jobs:
         with:
           role-to-assume: ${{ env.role-to-assume }}
           role-session-name: ${{ env.role-session-name }}
+          aws-region: ${{ env.aws-region }}
 #  validate-action:
 #    permissions:
 #      id-token: write
