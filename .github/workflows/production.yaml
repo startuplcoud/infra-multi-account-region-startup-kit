@@ -35,7 +35,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
-          dev: ${{ matrix.dev }}
+          env: ${{ matrix.env }}
 
 #  validate-action:
 #    permissions:
