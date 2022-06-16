@@ -1,0 +1,44 @@
+name: "terragrunt plan and apply"
+
+inputs:
+  role-to-assume:
+    required: true
+    description: "AWS IAM role"
+  role-session-name:
+    required: true
+    description: "AWS IAM role session name"
+
+  apply-terragrunt:
+    type: boolean
+    default: false
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v2
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: 0.37.3
+
+    - name: GitHub OIDC Auth to assume AWS Role
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        role-session-name: ${{ inputs.role-session-name }}
+
+    - name: terragrunt validate
+      run: cd terragrunt && terragrunt run-all validate
+    - name: terragunt validate inputs
+      run: cd terragrunt && terragunt validate-inputs --terragrunt-strict-validate
+    - name: terragrunt plan
+      run: cd terragrunt && terragrunt run-all plan
+
+    - name: terragrunt apply
+      if: ${{ inputs.apply-terragrunt == true }}
+      run: cd terragrunt && terragrunt run-all apply
+
+

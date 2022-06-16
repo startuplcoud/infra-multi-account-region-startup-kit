@@ -1,27 +1,44 @@
 name: "terragrunt plan and apply"
-
+description: init the terraform & terragrunt packages
 inputs:
-  role-to-assume:
+  infracost_api_key:
+    description: "INFRACOST_API_KEY"
     required: true
-    description: ""
-  role-session-name:
-    required: true
-    description: ""
 
 runs:
   using: "composite"
   steps:
-    - name: GitHub OIDC Auth to assume AWS Role
-      uses: aws-actions/configure-aws-credentials@v1
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v2
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
       with:
-        role-to-assume: ${{ inputs.role-to-assume }}
-        role-session-name: ${{ inputs.role-session-name }}
+        terragrunt_version: 0.37.3
 
-    - name: validate terragrunt
-      run: cd terragrunt && terragrunt run-all validate
-    - name: terragunt validate inputs
-      run: cd terragrunt && terragunt validate-inputs --terragrunt-strict-validate
-    - name: plan terragrunt
-      run: cd terragrunt && terragrunt run-all plan
-
-
+#    - name: setup terrascan
+#      # https://github.com/tenable/terrascan-action
+#      id: terrascan
+#      uses: tenable/terrascan-action@main
+#      with:
+#        iac_type: 'terraform'
+#        iac_version: 'v14'
+#        policy_type: 'aws'
+#        only_warn: true
+#        sarif_upload: true
+#
+#    - name: Setup Infracost
+#      # https://github.com/infracost/actions
+#      # https://github.com/infracost/actions/tree/master/setup for other inputs
+#      uses: infracost/actions/setup@v2
+#      with:
+#        api-key: ${{ inputs.infracost_api_key }}
+#
+#    - name: Run checkov action
+#      # https://github.com/bridgecrewio/checkov-action
+#      id: checkov
+#      uses: bridgecrewio/checkov-action@master
+#
+#    - name: Setup TFLint
+#      uses: terraform-linters/setup-tflint@v1
+#      with:
+#        tflint_version: v0.29.0
