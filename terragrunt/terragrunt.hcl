@@ -13,11 +13,11 @@ generate "providers" {
   contents  = <<EOF
 provider "aws" {
   region = local.aws_region
+  assume_role {
+      role_arn = "arn:aws:iam::${local.account_id}:role/${local.role_name}"
+      session_name = "github-action"
+  }
 EOF
-  #    assume_role {
-  #    role_arn = "arn:aws:iam::${local.account_id}:role/terragrunt"
-  #    session_name = "github-action"
-  #}
 }
 
 remote_state {

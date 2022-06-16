@@ -11,9 +11,13 @@ inputs:
     default: 'false'
     required: false
     description: apply the module or not
+  env:
+    required: true
+    description: path in terragrunt
   aws-region:
     required: true
-    description: aws region
+    description: path in region
+
 runs:
   using: "composite"
   steps:
@@ -33,17 +37,18 @@ runs:
 
     - name: terragrunt validate
       shell: bash
-      run: cd terragrunt && terragrunt run-all validate
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all validate
+
     - name: terragunt validate inputs
       shell: bash
-      run: cd terragrunt && terragunt validate-inputs --terragrunt-strict-validate
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragunt validate-inputs --terragrunt-strict-validate
     - name: terragrunt plan
       shell: bash
-      run: cd terragrunt && terragrunt run-all plan
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all plan
 
     - name: terragrunt apply
       shell: bash
       if: ${{ inputs.apply-terragrunt == 'true' }}
-      run: cd terragrunt && terragrunt run-all apply
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all apply
 
 

@@ -4,13 +4,23 @@ on:
     branches:
       - main
 
-env:
-  role-to-assume: arn:aws:iam::${{ secrets.PROD_AWS_ACCOUNT_ID }}:role/terragrunt
-  role-session-name: github-action
-  aws-region: us-east-1
-
 jobs:
   terragrunt-action:
+    strategy:
+      matrix:
+        env: ["dev", "prod"]
+        aws_region: ["us-east-1"]
+        include:
+          - env: dev
+            aws-region: us-east-1
+            aws-account-id: 733051034790
+            aws-role: terragrunt
+
+          - env: prod
+            aws-region: us-east-1
+            aws-account-id: xxxxxx
+            aws-role: terragrunt
+
     name: init packages
     runs-on: ubuntu-latest
     permissions:
@@ -22,9 +32,11 @@ jobs:
       - name: terragrunt packages
         uses: ./.github/action/terragrunt-action
         with:
-          role-to-assume: ${{ env.role-to-assume }}
-          role-session-name: ${{ env.role-session-name }}
-          aws-region: ${{ env.aws-region }}
+          role-to-assume: arn:aws:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
+          role-session-name: github-action
+          aws-region: ${{ matrix.aws-region }}
+          dev: ${{ matrix.dev }}
+
 #  validate-action:
 #    permissions:
 #      id-token: write
