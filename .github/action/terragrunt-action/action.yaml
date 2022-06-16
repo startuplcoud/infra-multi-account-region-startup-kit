@@ -37,11 +37,11 @@ runs:
 
     - name: terragrunt validate
       shell: bash
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all validate -auto-approve
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all validate --terragrunt-non-interactive
 
     - name: terragunt validate inputs
       shell: bash
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragunt validate-inputs --terragrunt-strict-validate -auto-approve
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragunt validate-inputs --terragrunt-strict-validate
     - name: terragrunt plan
       shell: bash
       run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all plan
