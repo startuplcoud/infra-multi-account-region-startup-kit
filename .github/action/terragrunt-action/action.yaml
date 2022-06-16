@@ -8,9 +8,9 @@ inputs:
     required: true
     description: "AWS IAM role session name"
   apply-terragrunt:
-    default: "false"
+    default: 'false'
+    required: false
     description: apply the module or not
-    required: true
 runs:
   using: "composite"
   steps:
@@ -39,7 +39,7 @@ runs:
 
     - name: terragrunt apply
       shell: bash
-      if: ${{ inputs.apply-terragrunt == "true" }}
+      if: ${{ inputs.apply-terragrunt == 'true' }}
       run: cd terragrunt && terragrunt run-all apply
 
 
