@@ -13,6 +13,7 @@ generate "providers" {
   contents  = <<EOF
 provider "aws" {
   region = local.aws_region
+}
 EOF
 }
 
