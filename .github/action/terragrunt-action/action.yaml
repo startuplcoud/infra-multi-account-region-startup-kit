@@ -1,5 +1,5 @@
 name: "terragrunt plan and apply"
-
+description: terragrunt validate and apply terraform
 inputs:
   role-to-assume:
     required: true
@@ -7,10 +7,9 @@ inputs:
   role-session-name:
     required: true
     description: "AWS IAM role session name"
-
   apply-terragrunt:
-    type: boolean
-    default: false
+    default: "false"
+    description: apply the module or not
     required: true
 runs:
   using: "composite"
@@ -29,14 +28,18 @@ runs:
         role-session-name: ${{ inputs.role-session-name }}
 
     - name: terragrunt validate
+      shell: bash
       run: cd terragrunt && terragrunt run-all validate
     - name: terragunt validate inputs
+      shell: bash
       run: cd terragrunt && terragunt validate-inputs --terragrunt-strict-validate
     - name: terragrunt plan
+      shell: bash
       run: cd terragrunt && terragrunt run-all plan
 
     - name: terragrunt apply
-      if: ${{ inputs.apply-terragrunt == true }}
+      shell: bash
+      if: ${{ inputs.apply-terragrunt == "true" }}
       run: cd terragrunt && terragrunt run-all apply
 
 
