@@ -1,8 +1,10 @@
 locals {
   env_vars   = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
-  aws_region = local.env_vars.locals.aws_region
-  project    = local.env_vars.locals.project
-  account_id = yamldecode(file("${find_in_parent_folders("account.yaml")}"))
+  account_vars = yamldecode(file("${find_in_parent_folders("account.yaml")}"))
+  account_id = local.account_vars["account_id"]
+  role_name = local.account_vars["role_name"]
+  aws_region = local.env_vars["aws_region"]
+  project    = local.env_vars["project"]
 }
 
 generate "providers" {
@@ -11,11 +13,11 @@ generate "providers" {
   contents  = <<EOF
 provider "aws" {
   region = local.aws_region
-  assume_role {
-    role_arn = "arn:aws:iam::${local.account_id}:role/terragrunt"
-    session_name = "github-action"
-}
 EOF
+#    assume_role {
+#    role_arn = "arn:aws:iam::${local.account_id}:role/terragrunt"
+#    session_name = "github-action"
+#}
 }
 
 remote_state {
@@ -34,6 +36,7 @@ remote_state {
 }
 
 inputs = merge(
-  local.region_vars.locals,
-  local.env_vars.locals
+  local.env_vars
 )
+
+
