@@ -2,8 +2,12 @@ include {
   path = find_in_parent_folders()
 }
 
-locals {
+
+terraform {
   source = "../../../..//infra/module/vpc"
+  extra_arguments "common_vars" {
+    commands = get_terraform_commands_that_need_vars()
+  }
 }
 
 include "common" {
