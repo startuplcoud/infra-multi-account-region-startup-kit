@@ -1,8 +1,8 @@
-
 locals {
   env_vars = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
   aws_region = local.env_vars.locals.aws_region
   project = local.env_vars.locals.project
+  account_id = yamldecode(file("${find_in_parent_folders("account.yaml")}"))
 }
 
 generate "providers" {
@@ -12,7 +12,7 @@ generate "providers" {
 provider "aws" {
   region = local.aws_region
   assume_role {
-    role_arn = local.role_arn
+    role_arn = "arn:aws:iam::${local.account_id}:role/terragrunt"
 }
 EOF
 }

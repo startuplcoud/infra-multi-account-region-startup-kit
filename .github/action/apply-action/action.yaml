@@ -1,0 +1,9 @@
+name: "terragrunt plan and apply"
+
+runs:
+  using: "composite"
+  steps:
+    - name: apply terragrunt
+      run: cd terragrunt && terragrunt run-all apply
+
+

@@ -19,6 +19,7 @@ locals {
   port = 80
   ssh_key = "startupcloud"
 }
+
 inputs = {
   vpc_id = dependency.vpc.outputs.vpc_id
   instance_type = local.instance_type

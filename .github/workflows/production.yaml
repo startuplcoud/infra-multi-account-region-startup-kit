@@ -1,0 +1,48 @@
+name: 'Deploy prod Infra'
+on:
+  push:
+    branches:
+      - main
+
+env:
+  role-to-assume: arn:aws:iam::${{ secrets.PROD_AWS_ACCOUNT_ID }}:role/terragrunt
+  role-session-name: github-action
+
+jobs:
+  init-packages:
+    name: init packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: init packages
+        uses: ./.github/action/init-action
+        with:
+          infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
+  validate-packages:
+    permissions:
+      id-token: write
+      contents: read
+    needs: ['init-packages']
+    runs-on: ubuntu-latest
+    steps:
+      - name: validate terragrunt modules
+        uses: ./.github/action/validate-action
+        with:
+          role-to-assume: ${{ env.role-to-assume }}
+          role-session-name: ${{ env.role-session-name }}
+  check-action:
+    needs: ["init-packages"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: check terragrunt
+        uses: ./.github/action/check-action
+  apply-action:
+    needs: ["init-packages"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: apply terragrunt
+        uses: ./.github/action/apply-action
+
+
+
+
+

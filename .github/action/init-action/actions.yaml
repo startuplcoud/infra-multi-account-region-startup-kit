@@ -1,0 +1,43 @@
+name: "terragrunt plan and apply"
+inputs:
+  infracost_api_key:
+    discription: "INFRACOST_API_KEY"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v2
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: 0.37.3
+
+    - name: setup terrascan
+      # https://github.com/tenable/terrascan-action
+      id: terrascan
+      uses: tenable/terrascan-action@main
+      with:
+        iac_type: 'terraform'
+        iac_version: 'v14'
+        policy_type: 'aws'
+        only_warn: true
+        sarif_upload: true
+
+    - name: Setup Infracost
+      # https://github.com/infracost/actions
+      # https://github.com/infracost/actions/tree/master/setup for other inputs
+      uses: infracost/actions/setup@v2
+      with:
+        api-key: ${{ inputs.infracost_api_key }}
+
+    - name: Run checkov action
+      # https://github.com/bridgecrewio/checkov-action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v1
+      with:
+        tflint_version: v0.29.0

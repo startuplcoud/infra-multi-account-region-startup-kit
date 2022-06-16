@@ -21,13 +21,10 @@ terraform {
   }
 }
 
-
 locals {
   port = 80
   service_name = "nginx"
 }
-
-
 
 inputs = {
   port                   = local.port
