@@ -15,5 +15,5 @@ variable "port" {
 }
 
 variable "autoscaling_group_name" {
-  type= string
+  type = string
 }

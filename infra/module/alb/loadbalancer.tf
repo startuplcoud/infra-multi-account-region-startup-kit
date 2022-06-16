@@ -7,11 +7,11 @@ resource "aws_alb" "load-balancer" {
 }
 
 resource "aws_alb_target_group" "target_group" {
-  name        = replace("${var.service_name}-target", "_", "-")
-  port        = var.port
-  protocol    = "HTTP"
-  target_type = "instance"
-  vpc_id      = var.vpc_id
+  name             = replace("${var.service_name}-target", "_", "-")
+  port             = var.port
+  protocol         = "HTTP"
+  target_type      = "instance"
+  vpc_id           = var.vpc_id
   protocol_version = "HTTP2"
   health_check {
     protocol            = "HTTP"
@@ -30,13 +30,13 @@ resource "aws_alb_listener" "alb_listener_80" {
   port              = 80
   protocol          = "HTTP"
   default_action {
-    type = "forward"
-        target_group_arn = aws_alb_target_group.target_group.arn
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.target_group.arn
   }
 }
 
 resource "aws_autoscaling_attachment" "attachment" {
   autoscaling_group_name = var.autoscaling_group_name
-  lb_target_group_arn = aws_alb_target_group.target_group.arn
+  lb_target_group_arn    = aws_alb_target_group.target_group.arn
 }
 

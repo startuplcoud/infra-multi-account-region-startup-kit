@@ -1,7 +1,7 @@
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-    cidr = var.vpc_cidr
-  azs  = data.aws_availability_zones.current_zones.names
+  cidr   = var.vpc_cidr
+  azs    = data.aws_availability_zones.current_zones.names
 
   public_subnets = [
     for num in range(length(data.aws_availability_zones.current_zones.names)) :
@@ -27,8 +27,8 @@ module "vpc" {
   single_nat_gateway = true
 
   tags = {
-    Terraform = "true"
-    Environment  = var.environment
+    Terraform   = "true"
+    Environment = var.environment
   }
   default_vpc_tags = {
     Name = var.vpc_name

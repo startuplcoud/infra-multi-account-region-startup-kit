@@ -1,14 +1,14 @@
 dependency "vpc" {
-  config_path  = "..//vpc"
+  config_path = "..//vpc"
   mock_outputs = {
-    public_subnet_ids            = ["ssss", "sssss"]
+    public_subnet_ids             = ["ssss", "sssss"]
     vpc_id                        = "xxxxxx"
     default_vpc_security_group_id = "xxxxx"
   }
 }
 
 dependency "autoscale" {
-  config_path  = "..//autoscale"
+  config_path = "..//autoscale"
   mock_outputs = {
     autoscaling_group_name = "xxxx"
   }
@@ -22,7 +22,7 @@ terraform {
 }
 
 locals {
-  port = 80
+  port         = 80
   service_name = "nginx"
 }
 

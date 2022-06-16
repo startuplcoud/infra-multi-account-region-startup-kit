@@ -7,9 +7,9 @@ module "load_balancer_security" {
 
   ingress_with_cidr_blocks = [
     {
-      from_port   = var.port
-      to_port     = var.port
-      protocol    = "tcp"
+      from_port         = var.port
+      to_port           = var.port
+      protocol          = "tcp"
       security_group_id = var.vpc_security_group_id
     }
   ]

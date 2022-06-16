@@ -1,7 +1,7 @@
 locals {
-  env_vars = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
+  env_vars   = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
   aws_region = local.env_vars.locals.aws_region
-  project = local.env_vars.locals.project
+  project    = local.env_vars.locals.project
   account_id = yamldecode(file("${find_in_parent_folders("account.yaml")}"))
 }
 
@@ -13,12 +13,13 @@ provider "aws" {
   region = local.aws_region
   assume_role {
     role_arn = "arn:aws:iam::${local.account_id}:role/terragrunt"
+    session_name = "github-action"
 }
 EOF
 }
 
 remote_state {
-  backend  = "s3"
+  backend = "s3"
   generate = {
     path      = "backend.tf"
     if_exists = "overwrite_terragrunt"
@@ -33,6 +34,6 @@ remote_state {
 }
 
 inputs = merge(
-  local.region_vars.locals
+  local.region_vars.locals,
   local.env_vars.locals
 )
