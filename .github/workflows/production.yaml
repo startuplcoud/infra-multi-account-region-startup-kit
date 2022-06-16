@@ -30,13 +30,13 @@ jobs:
           role-to-assume: ${{ env.role-to-assume }}
           role-session-name: ${{ env.role-session-name }}
   check-action:
-    needs: ["init-packages"]
+    needs: ["validate-packages"]
     runs-on: ubuntu-latest
     steps:
       - name: check terragrunt
         uses: ./.github/action/check-action
   apply-action:
-    needs: ["init-packages"]
+    needs: ["check-packages"]
     runs-on: ubuntu-latest
     steps:
       - name: apply terragrunt
