@@ -9,7 +9,7 @@ env:
   role-session-name: github-action
 
 jobs:
-  init-packages:
+  init-action:
     name: init packages
     runs-on: ubuntu-latest
     steps:
@@ -17,11 +17,11 @@ jobs:
         uses: ./.github/action/init-action
         with:
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
-  validate-packages:
+  validate-action:
     permissions:
       id-token: write
       contents: read
-    needs: ['init-packages']
+    needs: ['init-action']
     runs-on: ubuntu-latest
     steps:
       - name: validate terragrunt modules
@@ -30,13 +30,13 @@ jobs:
           role-to-assume: ${{ env.role-to-assume }}
           role-session-name: ${{ env.role-session-name }}
   check-action:
-    needs: ["validate-packages"]
+    needs: ["validate-action"]
     runs-on: ubuntu-latest
     steps:
       - name: check terragrunt
         uses: ./.github/action/check-action
   apply-action:
-    needs: ["check-packages"]
+    needs: ["check-action"]
     runs-on: ubuntu-latest
     steps:
       - name: apply terragrunt
