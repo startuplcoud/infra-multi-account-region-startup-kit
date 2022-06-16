@@ -1,7 +1,8 @@
 name: "terragrunt plan and apply"
+description: init the terraform & terragrunt packages
 inputs:
   infracost_api_key:
-    discription: "INFRACOST_API_KEY"
+    description: "INFRACOST_API_KEY"
     required: true
 
 runs:
