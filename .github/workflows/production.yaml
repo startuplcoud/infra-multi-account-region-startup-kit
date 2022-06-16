@@ -13,6 +13,8 @@ jobs:
     name: init packages
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
       - name: init packages
         uses: ./.github/action/init-action
         with:
