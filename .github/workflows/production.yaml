@@ -16,7 +16,9 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: init packages
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: terragrunt packages
         uses: ./.github/action/terragrunt-action
         with:
           role-to-assume: ${{ env.role-to-assume }}
