@@ -12,11 +12,13 @@ jobs:
             aws-region: us-east-1
             aws-account-id: 733051034790
             aws-role: terragrunt
-            
+            aws: aws
+
           - env: prod
             aws-region: cn-northwest-1
             aws-account-id: 527109613237
             aws-role: terragrunt
+            aws: aws-cn
 
     name: init packages
     runs-on: ubuntu-latest
@@ -29,7 +31,7 @@ jobs:
       - name: terragrunt packages
         uses: ./.github/action/terragrunt-action
         with:
-          role-to-assume: arn:aws:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
+          role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
           env: ${{ matrix.env }}
