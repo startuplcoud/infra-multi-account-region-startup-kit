@@ -7,8 +7,6 @@ jobs:
   terragrunt-action:
     strategy:
       matrix:
-        env: [""]
-        aws_region: [""]
         include:
           - env: dev
             aws-region: us-east-1
