@@ -7,14 +7,14 @@ jobs:
   terragrunt-action:
     strategy:
       matrix:
-        env: ["dev", "prod"]
-        aws_region: ["us-east-1", "cn-northwest-1"]
+        env: [""]
+        aws_region: [""]
         include:
           - env: dev
             aws-region: us-east-1
             aws-account-id: 733051034790
             aws-role: terragrunt
-
+            
           - env: prod
             aws-region: cn-northwest-1
             aws-account-id: 527109613237
