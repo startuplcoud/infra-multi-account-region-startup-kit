@@ -16,8 +16,8 @@ jobs:
             aws-role: terragrunt
 
           - env: prod
-            aws-region: us-east-1
-            aws-account-id: xxxxxx
+            aws-region: cn-northwest-1
+            aws-account-id: 527109613237
             aws-role: terragrunt
 
     name: init packages

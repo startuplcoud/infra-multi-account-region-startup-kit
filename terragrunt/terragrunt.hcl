@@ -1,8 +1,5 @@
 locals {
   env_vars     = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
-  account_vars = yamldecode(file("${find_in_parent_folders("account.yaml")}"))
-  account_id   = local.account_vars["account_id"]
-  role_name    = local.account_vars["role_name"]
   aws_region   = local.env_vars["aws_region"]
   project      = local.env_vars["project"]
 }
