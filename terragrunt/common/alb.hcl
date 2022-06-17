@@ -21,6 +21,7 @@ locals {
 }
 
 inputs = {
+  service_name           = local.service_name
   port                   = local.port
   vpc_id                 = dependency.vpc.outputs.vpc_id
   load_balancer_subnets  = dependency.vpc.outputs.public_subnet_ids

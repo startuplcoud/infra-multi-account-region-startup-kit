@@ -13,6 +13,9 @@ locals {
 }
 
 inputs = {
+  ssh_key               = local.ssh_key
+  port                  = local.port
+  name                  = "startupcloud"
   vpc_id                = dependency.vpc.outputs.vpc_id
   private_subnets       = dependency.vpc.outputs.private_subnet_ids
   vpc_security_group_id = dependency.vpc.outputs.default_vpc_security_group_id
