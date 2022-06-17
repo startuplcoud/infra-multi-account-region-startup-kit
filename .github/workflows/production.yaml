@@ -22,6 +22,7 @@ jobs:
 
     name: init packages
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       id-token: write
       contents: read
