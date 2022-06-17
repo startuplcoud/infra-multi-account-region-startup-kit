@@ -1,5 +1,5 @@
 dependency "vpc" {
-  config_path = "..//vpc"
+  config_path = "${get_original_terragrunt_dir()}/..//vpc"
   mock_outputs = {
     public_subnet_ids             = ["ssss", "sssss"]
     vpc_id                        = "xxxxxx"
@@ -8,7 +8,7 @@ dependency "vpc" {
 }
 
 dependency "autoscale" {
-  config_path = "..//autoscale"
+  config_path = "${get_original_terragrunt_dir()}/..//autoscale"
   mock_outputs = {
     autoscaling_group_name = "xxxx"
   }

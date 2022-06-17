@@ -2,7 +2,6 @@ include {
   path = find_in_parent_folders()
 }
 
-
 terraform {
   source = "../../../..//infra/module/vpc"
   extra_arguments "common_vars" {

@@ -1,15 +1,19 @@
+SHELL := /usr/bin/env bash
+export AWS_PROFILE=terragrunt
+export TF_PLUGIN_CACHE_DIR=$(HOME)/.terraform.d/plugin-cache
+
 format:
 	cd infra && terraform fmt -check
 	cd infra && terraform fmt -recursive
 	cd terragrunt && terragrunt hclfmt
 validate:
-	cd terragrunt && terragrunt run-all validate
+	cd terragrunt/$(directory) && terragrunt run-all validate
 plan:
-	cd terragrunt && terragrunt run-all plan
+	cd terragrunt/$(directory) && terragrunt run-all plan
 apply:
-	cd terragrunt && terragrunt run-all apply
+	cd terragrunt/$(directory) && terragrunt run-all apply
 destroy:
-	cd terragrunt && terragrunt run-all destroy
+	cd terragrunt/$(directory) && terragrunt run-all destroy
 plan-module:
 	cd terragrunt && terragrunt run-all plan --terragrunt-include-dir $(directory)
 

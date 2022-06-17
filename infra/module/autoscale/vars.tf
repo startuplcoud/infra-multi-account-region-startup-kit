@@ -7,14 +7,15 @@ variable "ssh_key" {
 }
 
 variable "instance_type" {
-  type = string
+  type    = string
+  default = "t4g.small"
 }
 variable "name" {
   type = string
 }
 
 variable "private_subnets" {
-  type = string
+  type = list(string)
 }
 
 variable "port" {
