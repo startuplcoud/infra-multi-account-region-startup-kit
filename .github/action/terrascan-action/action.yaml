@@ -1,0 +1,38 @@
+name: "terrascan check the terraform module"
+description: terrascan init and check
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup terrascan
+      # https://github.com/tenable/terrascan-action
+      uses: tenable/terrascan-action@main
+      with:
+        iac_type: 'terraform'
+        iac_version: 'v14'
+        policy_type: 'aws'
+        only_warn: true
+        iac_dir: "./infra/module"
+        sarif_upload: true
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: terrascan.sarif
+        category: terrascan
+#
+#    - name: Setup Infracost
+#      # https://github.com/infracost/actions
+#      # https://github.com/infracost/actions/tree/master/setup for other inputs
+#      uses: infracost/actions/setup@v2
+#      with:
+#        api-key: ${{ inputs.infracost_api_key }}
+#
+#    - name: Run checkov action
+#      # https://github.com/bridgecrewio/checkov-action
+#      id: checkov
+#      uses: bridgecrewio/checkov-action@master
+#
+#    - name: Setup TFLint
+#      uses: terraform-linters/setup-tflint@v1
+#      with:
+#        tflint_version: v0.29.0

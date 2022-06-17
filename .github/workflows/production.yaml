@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   terragrunt-action:
     strategy:
@@ -36,21 +35,3 @@ jobs:
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
           env: ${{ matrix.env }}
-
-#  validate-action:
-#    permissions:
-#      id-token: write
-#      contents: read
-#    needs: ['init-action']
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: validate terragrunt modules
-#        uses: ./.github/action/validate-action
-#        with:
-#          role-to-assume: ${{ env.role-to-assume }}
-#          role-session-name: ${{ env.role-session-name }}
-
-
-
-
-

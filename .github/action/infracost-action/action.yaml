@@ -1,0 +1,12 @@
+name: "terragrunt plan and apply"
+description: init the terraform & terragrunt packages
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Infracost
+      # https://github.com/infracost/actions
+      # https://github.com/infracost/actions/tree/master/setup for other inputs
+      uses: infracost/actions/setup@v2
+      with:
+        api-key: ${{ inputs.infracost_api_key }}

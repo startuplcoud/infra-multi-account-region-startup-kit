@@ -1,0 +1,10 @@
+name: "checkov check the terraform module"
+description: checkov init and check
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run checkov action
+      # https://github.com/bridgecrewio/checkov-action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master

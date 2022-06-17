@@ -1,0 +1,10 @@
+name: "tflint plan and apply"
+description: init the tflint packages
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v1
+      with:
+        tflint_version: v0.37.0
