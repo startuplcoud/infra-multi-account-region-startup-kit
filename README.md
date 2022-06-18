@@ -7,6 +7,12 @@ Set up AWS infrastructure with terragrunt and terraform in multiple accounts and
 
 1. grant the permission for the OICD provider for github actions
 
+
+AWS Achitecture
+
+![aws](images/aws.png)
+
+
 ### Terraform layout
 ```
 infra
@@ -65,6 +71,31 @@ infra
 │             └── terragrunt.hcl
 └── terragrunt.hcl
 ```
+
+#### global parameters for different region
+```
+aws_region: us-east-1
+account_id: xxxxxxxxx
+```
+
+#### terragrunt.hcl global provider
+```hcl
+generate "providers" {
+  path      = "providers.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+provider "aws" {
+  region = "${local.aws_region}"
+  allowed_account_ids  = [ "${local.account_id}" ]
+}
+EOF
+}
+```
+
+#### Github action with the AWS credential
+
+![github](images/github.png)
+
 
 ### Setup AWS IAM role 
 #### Setup AWS Identifier providers
@@ -164,4 +195,10 @@ strategy:
 
 ### Terragrunt tips
 #### reusable 
+
+#### apply one module
+```shell
+terragrunt run-all plan --terragrunt-include-dir $(directory)
+```
+ 
 
