@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - makefile
+      - images/*
+      - README.md
 jobs:
   terragrunt-action:
     strategy:
