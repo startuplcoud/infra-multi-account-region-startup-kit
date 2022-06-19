@@ -1,19 +1,25 @@
-# Setup multiple AWS regions & accounts with terragrunt & terraform and github actions CI/CD workflow
+# Setup CI/CD workflow pipeline with multiple AWS regions & accounts using Terragrunt & Terraform
 
+Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions demo kit.
 Goals:
-1.  Provide terraform code structure and 
+1.  Provisioning AWS infrastructure with terraform and terragrunt.
+2.  Support AWS with multiple accounts and regions.
+3.  Running the CI/CD workflow pipeline in parallel.
+4.  GitHub OIDC provider with AWS IAM role (without setting up AWS credentials' key)
+5.  Pattern: Separate terraform modules, keep the minimum AWS resources, and reduce duplicated codes. 
 
-Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions startup kit.
+## AWS Services Architecture
+This tutorial will show how to set up the AWS VPC and EC2 autoscaling group with the application load balancer and how to use the terraform & terragrunt to manage the AWS infrastructure.
 
-1. grant the permission for the OICD provider for github actions
-
-
-AWS Achitecture
-
+### The Auto Scaling & ALB Architecture Diagram
 ![aws](images/aws.png)
 
-
 ### Terraform layout
+Try to separate the resources and use separate directories for each component and application. 
+Useful links about Google best practices for [terraform](https://cloud.google.com/docs/terraform/best-practices-for-terraform#minimize-resources).  
+This tutorial separates the AWS resources into three modules, VPC & Auto Scaling & Application Load Balancer.   
+Do **NOT** set any variables such `.tfvars` in terraform module.
+
 ```
 infra
 └── module
@@ -28,48 +34,47 @@ infra
     │   ├── data.tf
     │   ├── security.tf
     │   └── vars.tf
-    └── vpc # vpc
+    └── vpc # vpc module
         ├── data.tf
         ├── main.tf
         ├── outputs.tf
         └── vars.tf
 ```
 ### Terragrunt layout
+
 ```
 .
-├── common # common configuration for each region modules
+├── common # common configuration and input variables
 │ ├── alb.hcl
 │ ├── autoscale.hcl
 │ └── vpc.hcl
-├── dev # aws dev environment global
-│ └── us-east-1
+├── dev # development account id
+│ └── us-east-1 # only provisioning resources in us-east-1
+│     ├── env.yaml global configuration parameters
 │     ├── alb
 │     │ └── terragrunt.hcl
 │     ├── autoscale
 │     │ └── terragrunt.hcl
-│     ├── env.yaml
 │     └── vpc
-│         └── terragrunt.hcl
-├── prod # aws prod environment account China region
-│ ├── cn-north-1
+│       └── terragrunt.hcl
+├── prod # production account id 
+│ ├── cn-north-1 (AWS China region)
 │ │ ├── env.yaml
+│ │ ├── alb
+│ │ │ └── terragrunt.hcl
+│ │ ├── autoscale
+│ │ │ └── terragrunt.hcl
 │ │ └── vpc
-│ │     ├── alb
-│ │     │ └── terragrunt.hcl
-│ │     ├── autoscale
-│ │     │ └── terragrunt.hcl
-│ │     └── vpc
-│ │         └── terragrunt.hcl
+│ │   └── terragrunt.hcl
 │ └── cn-northwest-1
 │     ├── env.yaml
+│     ├── alb
+│     │ └── terragrunt.hcl
+│     ├── autoscale
+│     │ └── terragrunt.hcl
 │     └── vpc
-│         ├── alb
-│         │ └── terragrunt.hcl
-│         ├── autoscale
-│         │ └── terragrunt.hcl
-│         └── vpc
-│             └── terragrunt.hcl
-└── terragrunt.hcl
+│       └── terragrunt.hcl
+└── terragrunt.hcl (Global terragrunt configuration)
 ```
 
 #### global parameters for different region
@@ -92,8 +97,8 @@ EOF
 }
 ```
 
-#### Github action with the AWS credential
-
+## Github OIDC to authenticate with  AWS IAM role. 
+1.  grant the permission for the OICD provider for github actions
 ![github](images/github.png)
 
 
@@ -168,7 +173,12 @@ AWS China region policy
     aws-region: us-east-1
 ```
 
-### multiple accounts & regions
+
+### Run CI/CD pipeline in parallel
+This post will show how to use the `strategy.matrix` to significantly reduce the time on Github workflows.
+`strategy.matrix` syntax allows creating multiple jobs by performing variable substitution in a single job definition.
+Check the useful links for more details about the [github job matrix](https://docs.github.com/cn/actions/using-jobs/using-a-matrix-for-your-jobs).
+
 ```yaml
 strategy:
   matrix:
@@ -178,20 +188,35 @@ strategy:
         aws-account-id: xxxxxxx
         aws-role: xxxxxx
         aws: aws
-        
       - env: prod
         aws-region: cn-north-1
         aws-account-id: xxxxx
         aws-role: xxxx
         aws: aws-cn
-        
       - env: prod
         aws-region: cn-northwest-1
         aws-account-id: xxxxx
         aws-role: xxxx
         aws: aws-cn
-  
 ```
+for parameters combinations will result in 3 jobs:
+1. `{env: dev, aws-region: us-east-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws}`
+2. `{env: prod, aws-region: cn-north-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws-cn}`
+3. `{env: prod, aws-region: cn-northwest-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws-cn}`
+then the job will dynamically fill the `matrix` values in the `with` sections.
+```yaml
+ steps:
+  - name: Checkout repo
+    uses: actions/checkout@v3
+  - name: terragrunt packages
+    uses: ./.github/action/terragrunt-action
+    with:
+      role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
+      role-session-name: github-action
+      aws-region: ${{ matrix.aws-region }}
+      env: ${{ matrix.env }}
+```
+
 
 ### Terragrunt tips
 #### reusable 
