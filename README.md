@@ -1,6 +1,6 @@
 # Setup CI/CD workflow pipeline with multiple AWS regions & accounts using Terragrunt & Terraform
 
-Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions demo kit.
+Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions demo kit.  
 Goals:
 1.  Provisioning AWS infrastructure with terraform and terragrunt.
 2.  Support AWS with multiple accounts and regions.

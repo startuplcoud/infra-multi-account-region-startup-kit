@@ -1,4 +1,4 @@
-name: 'Deploy prod Infra'
+name: 'Deploy Prod Infrastructure'
 on:
   push:
     branches:

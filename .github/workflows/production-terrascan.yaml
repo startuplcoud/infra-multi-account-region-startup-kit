@@ -1,0 +1,19 @@
+name: 'Terrascan Check'
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - makefile
+      - images/*
+      - README.md
+jobs:
+  terrascan-action:
+    name: Terrascan
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Terrascan terraform packages
+        uses: ./.github/action/terrascan-action
