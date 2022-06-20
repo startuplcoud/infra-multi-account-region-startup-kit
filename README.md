@@ -17,11 +17,9 @@ This tutorial will show how to set up the AWS VPC and EC2 autoscaling group with
 ![aws](images/aws.png)
 
 ### Terraform layout
-Try to separate the resources and use separate directories for each component and application. 
+Try to separate the resources and use separate directories for each component and application.   
 Useful links about Google best practices for [terraform](https://cloud.google.com/docs/terraform/best-practices-for-terraform#minimize-resources).  
-This tutorial separates the AWS resources into three modules, VPC & Auto Scaling & Application Load Balancer.   
-Do **NOT** set any variables such `.tfvars` in terraform module.
-
+This tutorial separates the AWS resources into three modules, VPC & Auto Scaling & Application Load Balancer.
 ```
 infra
 └── module
@@ -79,13 +77,26 @@ infra
 └── terragrunt.hcl (Global terragrunt configuration)
 ```
 
-#### global parameters for different region
+### Global Variable and auto generate for the common providers.
+In the `env.yaml`, for the different region and accounts
+we need to set the AWS account id and region variables.
+#### Global env.yaml
 ```
 aws_region: us-east-1
 account_id: xxxxxxxxx
 ```
-
 #### terragrunt.hcl global provider
+In the global terragrunt file, we can retrieve the `aws_region` and `account_id` in the `env.yaml`.
+```hcl
+locals {
+  env_vars   = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
+  aws_region = local.env_vars["aws_region"]
+  project    = local.env_vars["project"]
+  account_id = local.env_vars["account_id"]
+}
+```
+then, in the auto generate provider syntax, so it will generate the `providers.tf` in each terraform module,
+the provider already strict the AWS region and account.
 ```hcl
 generate "providers" {
   path      = "providers.tf"
@@ -99,29 +110,36 @@ EOF
 }
 ```
 
-## Github OIDC to authenticate with  AWS IAM role. 
-1.  grant the permission for the OICD provider for github actions
-![github](images/github.png)
+## Github OIDC with AWS IAM role.
+Assume roles in AWS using an OpenID Connect identity provider.
+In AWS, we can register GitHub as an Identity Provider, and then the JWT generated 
+by GitHub is allowed to access AWS account.
+![OIDC](images/github_oidc.png)
 
+### Set up AWS IAM role & policies
+#### Create OIDC Provider connection
+In IAM → Identity providers → Add provider:
 
-### Setup AWS IAM role 
-#### Setup AWS Identifier providers
 ![identify](images/identity.png)
 
+Provider URL: `https://token.actions.githubusercontent.com`  
+
 Global Region:   
-Provider URL: `https://token.actions.githubusercontent.com`  
-Audience: `sts.amazoneaws.com`
+Audience: `sts.amazoneaws.com`    
+China Region:   
+Audience: 
+`sts.cn-north-1.amazonaws.com.cn`(Beijing Region)           
+`sts.cn-northwest-1.amazonaws.com.cn` (Ningxia Region)
 
-China Region:  
-Provider URL: `https://token.actions.githubusercontent.com`  
-Audience: `sts.cn-north-1.amazonaws.com.cn`(Beijing Region) `sts.cn-northwest-1.amazonaws.com.cn` (Ningxia Region)
-
-IAM role
-Select Trust entity type
+#### Create AWS IAM role
+Select Trust entity type, select the `Web identity`:
 ![role](images/role.png)
-Add permission
+Add the `AdministratorAccess` permission
 ![role2](images/role2.png)
-AWS Global policy
+
+For policy also need to add the `"token.actions.githubusercontent.com:sub": "repo:{gituser}/{gitrepo}:ref:refs/heads/xxx"`,
+this is used for to grant the boundary of git repository.
+Global Region policy:
 ```json
 {
     "Version": "2012-10-17",
@@ -164,7 +182,7 @@ AWS China region policy
 }
 ```
 
-###  GitHub OIDC Auth to assume AWS Role
+####  GitHub Actions OIDC Auth to assume AWS Role
 
 ```yaml
 - name: GitHub OIDC Auth to assume AWS Role
@@ -174,9 +192,12 @@ AWS China region policy
     role-session-name: github-action
     aws-region: us-east-1
 ```
+after the actions execute, the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` will automatically register in the global environment.
+
+![github](images/github.png)
 
 
-### Run CI/CD pipeline in parallel
+## Run CI/CD pipeline in parallel
 This post will show how to use the `strategy.matrix` to significantly reduce the time on Github workflows.
 `strategy.matrix` syntax allows creating multiple jobs by performing variable substitution in a single job definition.
 Check the useful links for more details about the [github job matrix](https://docs.github.com/cn/actions/using-jobs/using-a-matrix-for-your-jobs).
@@ -220,10 +241,9 @@ then the job will dynamically fill the `matrix` values in the `with` sections.
 ```
 
 
-### Terragrunt tips
-#### reusable 
-
-#### apply one module
+## Terragrunt tips
+### reusable
+### apply one module
 ```shell
 terragrunt run-all plan --terragrunt-include-dir $(directory)
 ```
