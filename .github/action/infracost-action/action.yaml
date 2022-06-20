@@ -1,12 +1,56 @@
 name: "terragrunt plan and apply"
 description: init the terraform & terragrunt packages
+inputs:
+  role-to-assume:
+    required: true
+    description: "AWS IAM role"
+  role-session-name:
+    required: true
+    description: "AWS IAM role session name"
+  apply-terragrunt:
+    default: 'false'
+    required: false
+    description: apply the module or not
+  env:
+    required: true
+    description: path in terragrunt
+  aws-region:
+    required: true
+    description: path in region
+  infracost_api_key:
+    required: true
+    description: infracost
 
 runs:
   using: "composite"
   steps:
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: 0.37.3
+
+    - name: GitHub OIDC Auth to assume AWS Role
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        role-session-name: ${{ inputs.role-session-name }}
+        aws-region: ${{ inputs.aws-region }}
+
     - name: Setup Infracost
       # https://github.com/infracost/actions
       # https://github.com/infracost/actions/tree/master/setup for other inputs
       uses: infracost/actions/setup@v2
       with:
         api-key: ${{ inputs.infracost_api_key }}
+
+    - name: terragrunt plan
+      shell: bash
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all plan
+
+
+
