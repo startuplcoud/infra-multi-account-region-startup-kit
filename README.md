@@ -1,4 +1,6 @@
 # Setup CI/CD workflow pipeline with multiple AWS regions & accounts using Terragrunt & Terraform
+[![Deploy Prod Infrastructure](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terragrunt.yaml/badge.svg?branch=main)](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terragrunt.yaml)
+[![Terrascan Check](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terrascan.yaml/badge.svg?branch=main)](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terrascan.yaml)
 
 Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions demo kit.  
 Goals:

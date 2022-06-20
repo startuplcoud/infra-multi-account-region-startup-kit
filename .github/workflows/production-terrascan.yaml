@@ -12,6 +12,10 @@ jobs:
     name: Terrascan
     runs-on: ubuntu-latest
     continue-on-error: true
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
