@@ -77,7 +77,7 @@ infra
 └── terragrunt.hcl (Global terragrunt configuration)
 ```
 
-### Global Variable and auto generate for the common providers.
+### Global Variable and auto generate for the global providers.
 In the `env.yaml`, for the different region and accounts
 we need to set the AWS account id and region variables.
 #### Global env.yaml
@@ -240,9 +240,18 @@ then the job will dynamically fill the `matrix` values in the `with` sections.
       env: ${{ matrix.env }}
 ```
 
-
-## Terragrunt tips
-### reusable
+## Terragrunt best practices
+### reduce duplicated code
+ 1. Using multiple `include` blocks to DRY common terragrunt configuration.
+ 2. Using deep merge to DRY nested attributes.
+ 3. Using expose includes to override common configuration variables.
+ 4. Reducing duplicated code blocks such as `inputs` or `dependency` for each terragrunt modules.
+```hcl
+include "common" {
+  path   = "${dirname(find_in_parent_folders())}/common/alb.hcl"
+  expose = true
+}
+```
 ### apply one module
 ```shell
 terragrunt run-all plan --terragrunt-include-dir $(directory)
