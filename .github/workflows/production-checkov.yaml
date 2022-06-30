@@ -1,0 +1,42 @@
+name: 'Infracost'
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - makefile
+      - images/*
+      - README.md
+jobs:
+  infracost-action:
+    strategy:
+      matrix:
+        include:
+          - env: dev
+            aws-region: us-east-1
+            aws-account-id: 733051034790
+            aws-role: terragrunt
+            aws: aws
+          - env: prod
+            aws-region: cn-north-1
+            aws-account-id: 527109613237
+            aws-role: terragrunt
+            aws: aws-cn
+
+    name: init packages
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: terragrunt packages
+        uses: ./.github/action/checkov-action
+        with:
+          role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
+          role-session-name: github-action
+          aws-region: ${{ matrix.aws-region }}
+          env: ${{ matrix.env }}
+

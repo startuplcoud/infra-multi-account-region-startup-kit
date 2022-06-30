@@ -1,10 +1,79 @@
 name: "checkov check the terraform module"
 description: checkov init and check
+inputs:
+  role-to-assume:
+    required: true
+    description: "AWS IAM role"
+  role-session-name:
+    required: true
+    description: "AWS IAM role session name"
+  apply-terragrunt:
+    default: 'false'
+    required: false
+    description: apply the module or not
+  env:
+    required: true
+    description: path in terragrunt
+  aws-region:
+    required: true
+    description: path in region
 
 runs:
   using: "composite"
   steps:
     - name: Run checkov action
       # https://github.com/bridgecrewio/checkov-action
-      id: checkov
       uses: bridgecrewio/checkov-action@master
+      continue-on-error: true
+      with:
+        directory: infra/module
+        framework: terraform
+        container_user: 1000
+
+    - name: setup terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v1.1.0
+      with:
+        terragrunt_version: 0.37.3
+
+    - name: GitHub OIDC Auth to assume AWS Role
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        role-session-name: ${{ inputs.role-session-name }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: terragrunt plan
+      shell: bash
+      run: |
+        cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all plan --terragrunt-ignore-external-dependencies plan -out tfplan.binary
+
+    - name: Install Checkov
+      shell: bash
+      run: pip3 install checkov
+
+    - name: run checkov
+      shell: bash
+      continue-on-error: true
+      run: |
+        plans=($(find terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} -name tfplan.binary))
+        # Generate plan JSON files by running terragrunt show for each plan file
+        planjsons=()
+        for plan in "${plans[@]}"; do
+          # Find the Terraform working directory for running terragrunt show
+          # We want to take the dir of the plan file and strip off anything after the .terraform-cache dir
+          # to find the location of the Terraform working directory that contains the Terraform code
+          dir=$(dirname $plan)
+          dir=$(echo "$dir" | sed 's/\(.*\)\/\.terragrunt-cache\/.*/\1/')
+        
+          # Customize this to how you run Terragrunt
+          echo "Running terragrunt show for $(basename $plan) for $dir"
+          terragrunt show -json $(basename $plan) --terragrunt-working-dir=$dir --terragrunt-no-auto-init > $dir/plan.json
+          planjsons=(${planjsons[@]} "$dir/plan.json")
+          checkov -f $dir/plan.json --framework terraform
+          checkov -f $dir/plan.json --framework terraform -o sarif -s
+        done
