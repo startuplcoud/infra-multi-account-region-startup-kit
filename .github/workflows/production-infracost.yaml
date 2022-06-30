@@ -40,3 +40,5 @@ jobs:
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
           env: ${{ matrix.env }}
+          infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
+
