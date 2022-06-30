@@ -1,4 +1,4 @@
-name: 'Infracost Infrastructure'
+name: 'Infracost'
 on:
   push:
     branches:

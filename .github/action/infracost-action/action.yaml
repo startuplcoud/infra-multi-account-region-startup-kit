@@ -7,10 +7,6 @@ inputs:
   role-session-name:
     required: true
     description: "AWS IAM role session name"
-  apply-terragrunt:
-    default: 'false'
-    required: false
-    description: apply the module or not
   env:
     required: true
     description: path in terragrunt
@@ -20,6 +16,10 @@ inputs:
   infracost_api_key:
     required: true
     description: infracost
+  create_pr:
+    required: false
+    default: 'false'
+    description: create pr message for the infracost
 
 runs:
   using: "composite"
@@ -50,7 +50,68 @@ runs:
 
     - name: terragrunt plan
       shell: bash
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all plan
+      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-ignore-external-dependencies plan -out tfplan.binary
+    - name: check the infra cost
+      shell: bash
+      run: |
+        plans=($(find terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} -name tfplan.binary))
+        # Generate plan JSON files by running terragrunt show for each plan file
+        planjsons=()
+        for plan in "${plans[@]}"; do
+          # Find the Terraform working directory for running terragrunt show
+          # We want to take the dir of the plan file and strip off anything after the .terraform-cache dir
+          # to find the location of the Terraform working directory that contains the Terraform code
+          dir=$(dirname $plan)
+          dir=$(echo "$dir" | sed 's/\(.*\)\/\.terragrunt-cache\/.*/\1/')
+        
+          # Customize this to how you run Terragrunt
+          echo "Running terragrunt show for $(basename $plan) for $dir"
+          terragrunt show -json $(basename $plan) --terragrunt-working-dir=$dir --terragrunt-no-auto-init > $dir/plan.json
+          planjsons=(${planjsons[@]} "$dir/plan.json")
+        done
+        
+        # Sort the plan JSONs so we get consistent project ordering in the config file
+        IFS=$'\n' planjsons=($(sort <<<"${planjsons[*]}"))
+        
+        # Generate Infracost config file
+        echo -e "version: 0.1\n\nprojects:\n" > infracost-generated.yml
+        for planjson in "${planjsons[@]}"; do
+          echo -e "  - path: $planjson" >> infracost-generated.yml
+        done
+        
+        # Infracost CLI commands can be run now
+        infracost breakdown --config-file=infracost-generated.yml 
+        infracost breakdown --config-file=infracost-generated.yml --format=json --out-file=/tmp/infracost-base.json
+
+    - name: Generate Infracost diff
+      shell: bash
+      env:
+        TF_ROOT: terragrunt/${{ inputs.env }}/${{ inputs.aws-region }}
+      if: ${{ inputs.create_pr == 'true' }}
+      run: |
+        infracost diff --path=${TF_ROOT} \
+                          --format=json \
+                            --compare-to=/tmp/infracost-base.json \
+                            --out-file=/tmp/infracost.json
+
+     # Posts a comment to the PR using the 'update' behavior.
+     # This creates a single comment and updates it. The "quietest" option.
+     # The other valid behaviors are:
+     #   delete-and-new - Delete previous comments and create a new one.
+     #   hide-and-new - Minimize previous comments and create a new one.
+     #   new - Create a new cost estimate comment on every push.
+     # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
+    - name: Post Infracost comment
+      shell: bash
+      env:
+        TF_ROOT: terragrunt/${{ inputs.env }}/${{ inputs.aws-region }}
+      if: ${{ inputs.create_pr == 'true' }}
+      run: |
+        infracost comment github --path=/tmp/infracost.json \
+                                    --repo=$GITHUB_REPOSITORY \
+                                    --github-token=${{github.token}} \
+                                    --pull-request=${{github.event.pull_request.number}} \
+                                    --behavior=update
 
 
 

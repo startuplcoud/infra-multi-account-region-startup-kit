@@ -7,4 +7,5 @@ runs:
     - name: Setup TFLint
       uses: terraform-linters/setup-tflint@v1
       with:
-        tflint_version: v0.37.0
+        tflint_version: v0.38.1
+
