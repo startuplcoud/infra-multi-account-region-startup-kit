@@ -16,13 +16,13 @@ destroy:
 	cd terragrunt/$(directory) && terragrunt run-all destroy
 
 plan-module:
-	cd terragrunt/$(directory) && terragrunt run-all plan --terragrunt-include-dir $(directory)
+	cd terragrunt/$(directory) && terragrunt run-all plan --terragrunt-include-dir $(module)
 
 apply-module:
-	cd terragrunt/$(directory) && terragrunt run-all apply --terragrunt-include-dir $(directory)
+	cd terragrunt/$(directory) && terragrunt run-all apply --terragrunt-include-dir $(module)
 
 destroy-module:
-	cd terragrunt/$(directory) && terragrunt run-all destroy --terragrunt-include-dir $(directory)
+	cd terragrunt/$(directory) && terragrunt run-all destroy --terragrunt-include-dir $(module)
 clean-cache:
 	find . -type d -name ".terragrunt-cache" -prune -exec rm -rf {} \;
 
