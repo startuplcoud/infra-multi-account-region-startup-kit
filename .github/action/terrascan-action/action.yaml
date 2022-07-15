@@ -9,7 +9,7 @@ runs:
       uses: tenable/terrascan-action@main
       with:
         iac_type: 'terraform'
-        iac_version: 'v15'
+        iac_version: 'v14'
         policy_type: 'aws'
         only_warn: true
         iac_dir: "./infra/module"

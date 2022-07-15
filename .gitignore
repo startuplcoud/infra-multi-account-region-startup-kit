@@ -48,5 +48,7 @@ terraform.rc
 .terraform.lock.hcl
 plan.json
 
+.tflint.hcl
+infracost-generated.yml
 
 

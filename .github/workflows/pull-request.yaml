@@ -15,18 +15,13 @@ jobs:
         uses: actions/checkout@v3
       - name: terrascan
         uses: ./.github/action/terrascan-action
-  tflint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout repo
-        uses: actions/checkout@v3
-      - name: tflint check
-        uses: ./.github/action/tflint-action
+
   checkov:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
+
       - name: checkov check
         uses: ./.github/action/checkov-action
 
@@ -34,29 +29,43 @@ jobs:
     strategy:
       matrix:
         include:
-          - env: dev
-            aws-region: us-east-1
-            aws-account-id: 733051034790
-            aws-role: terragrunt
+          - env-dir: dev
+              aws-region: us-east-1
+              aws-account-id: 733051034790
+              aws-role: terragrunt
+              aws: aws
 
-          - env: prod
-            aws-region: us-east-1
-            aws-account-id: xxxxxx
-            aws-role: terragrunt
+          - env-dir: prod
+              aws-region: cn-north-1
+              aws-account-id: 527109613237
+              aws-role: terragrunt
+              aws: aws-cn
+
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
       - name: terragrunt packages
         uses: ./.github/action/terragrunt-action
         with:
           role-to-assume: arn:aws:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
-          env: ${{ matrix.env }}
+          env-dir: ${{ matrix.env-dir }}
+
+      - name: infracost packages
+        uses: ./.github/action/infracost-action
+        with:
+          role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
+          role-session-name: github-action
+          aws-region: ${{ matrix.aws-region }}
+          env-dir: ${{ matrix.env-dir }}
+          infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
 
 
 
