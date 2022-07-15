@@ -256,5 +256,34 @@ include "common" {
 ```shell
 terragrunt run-all plan --terragrunt-include-dir $(directory)
 ```
- 
+
+
+## Security Tips 
+### Encrypt terraform states in S3 bucket and Dynamodb
+terragrunt encrypt the tfstate in the remote s3 bucket and Dynamodb.
+```hcl
+remote_state {
+  backend = "s3"
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite_terragrunt"
+  }
+  config = {
+    bucket         = "${local.project}-terraform-state-${local.aws_region}"
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = local.aws_region
+    encrypt        = true
+    dynamodb_table = "${local.project}-terraform-lock-table"
+  }
+}
+```
+### Encrypting using Vault
+
+### Terraform code Vulnerability scan with GitHub Action
+
+## Cost Preview
+
+Cost estimates for Terraform with Infracost https://www.infracost.io/.
+
+
 

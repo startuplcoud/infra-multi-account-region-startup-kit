@@ -1,5 +1,3 @@
-
-
 resource "aws_launch_configuration" "configuration" {
   name                        = var.name
   image_id                    = data.aws_ami.ubuntu.id

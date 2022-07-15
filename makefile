@@ -15,6 +15,9 @@ apply:
 destroy:
 	cd terragrunt/$(directory) && terragrunt run-all destroy
 
+validate-module:
+	cd terragrunt/$(directory) && terragrunt run-all plan --terragrunt-include-dir $(module)
+
 plan-module:
 	cd terragrunt/$(directory) && terragrunt run-all plan --terragrunt-include-dir $(module)
 

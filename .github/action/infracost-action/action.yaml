@@ -1,5 +1,5 @@
-name: "terragrunt plan and apply"
-description: init the terraform & terragrunt packages
+name: "infracost estimates the cost"
+description: infracost estimates the cost
 inputs:
   role-to-assume:
     required: true
@@ -7,19 +7,19 @@ inputs:
   role-session-name:
     required: true
     description: "AWS IAM role session name"
-  env:
+  env-dir:
     required: true
-    description: path in terragrunt
+    description: directory with the aws account (mark) folder name
   aws-region:
     required: true
-    description: path in region
+    description: aws region
   infracost_api_key:
     required: true
-    description: infracost
+    description: infracost api key
   create_pr:
     required: false
     default: 'false'
-    description: create pr message for the infracost
+    description: create pull request message for the infracost
 
 runs:
   using: "composite"
@@ -50,11 +50,12 @@ runs:
 
     - name: terragrunt plan
       shell: bash
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-ignore-external-dependencies plan -out tfplan.binary
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-ignore-external-dependencies plan -out tfplan.binary
+
     - name: check the infra cost
       shell: bash
       run: |
-        plans=($(find terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} -name tfplan.binary))
+        plans=($(find terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} -name tfplan.binary))
         # Generate plan JSON files by running terragrunt show for each plan file
         planjsons=()
         for plan in "${plans[@]}"; do
@@ -86,7 +87,7 @@ runs:
     - name: Generate Infracost diff
       shell: bash
       env:
-        TF_ROOT: terragrunt/${{ inputs.env }}/${{ inputs.aws-region }}
+        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
       if: ${{ inputs.create_pr == 'true' }}
       run: |
         infracost diff --path=${TF_ROOT} \
@@ -104,7 +105,7 @@ runs:
     - name: Post Infracost comment
       shell: bash
       env:
-        TF_ROOT: terragrunt/${{ inputs.env }}/${{ inputs.aws-region }}
+        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
       if: ${{ inputs.create_pr == 'true' }}
       run: |
         infracost comment github --path=/tmp/infracost.json \

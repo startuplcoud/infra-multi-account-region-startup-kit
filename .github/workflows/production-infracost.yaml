@@ -12,19 +12,19 @@ jobs:
     strategy:
       matrix:
         include:
-          - env: dev
+          - env-dir: dev
             aws-region: us-east-1
             aws-account-id: 733051034790
             aws-role: terragrunt
             aws: aws
 
-          - env: prod
+          - env-dir: prod
             aws-region: cn-north-1
             aws-account-id: 527109613237
             aws-role: terragrunt
             aws: aws-cn
 
-    name: init packages
+    name: infracost actions
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
@@ -33,12 +33,13 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: terragrunt packages
+
+      - name: infracost packages
         uses: ./.github/action/infracost-action
         with:
           role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
-          env: ${{ matrix.env }}
+          env-dir: ${{ matrix.env-dir }}
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
 

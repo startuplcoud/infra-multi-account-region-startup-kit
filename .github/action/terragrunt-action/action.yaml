@@ -11,12 +11,12 @@ inputs:
     default: 'false'
     required: false
     description: apply the module or not
-  env:
+  env-dir:
     required: true
-    description: path in terragrunt
+    description: directory with the aws account (mark) folder name
   aws-region:
     required: true
-    description: path in region
+    description: aws region name
 
 runs:
   using: "composite"
@@ -40,15 +40,15 @@ runs:
 
     - name: terragrunt validate
       shell: bash
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all validate --terragrunt-non-interactive
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all validate --terragrunt-non-interactive
 
     - name: terragrunt plan
       shell: bash
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all plan
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all plan
 
     - name: terragrunt apply
       shell: bash
       if: ${{ inputs.apply-terragrunt == 'true' }}
-      run: cd terragrunt/${{ inputs.env }}/${{ inputs.aws-region }} && terragrunt run-all apply -auto-approve
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all apply -auto-approve
 
 

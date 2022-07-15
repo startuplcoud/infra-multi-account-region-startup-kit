@@ -8,8 +8,8 @@ on:
       - images/*
       - README.md
 jobs:
-  infracost-action:
-    name: init packages
+  checkov-action:
+    name: checkov terraform modules
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
@@ -18,6 +18,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: checkov validate terraform modules
+      - name: checkov scan terraform modules
         uses: ./.github/action/checkov-action
 

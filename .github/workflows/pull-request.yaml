@@ -22,13 +22,6 @@ jobs:
         uses: actions/checkout@v3
       - name: tflint check
         uses: ./.github/action/tflint-action
-  infracost:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout repo
-        uses: actions/checkout@v3
-      - name: infracost check
-        uses: ./.github/action/infracost-action
   checkov:
     runs-on: ubuntu-latest
     steps:
@@ -40,8 +33,6 @@ jobs:
   terragrunt-action:
     strategy:
       matrix:
-        env: [ "dev", "prod" ]
-        aws_region: [ "us-east-1" ]
         include:
           - env: dev
             aws-region: us-east-1
