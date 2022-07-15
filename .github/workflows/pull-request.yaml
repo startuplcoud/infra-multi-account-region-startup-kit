@@ -30,16 +30,16 @@ jobs:
       matrix:
         include:
           - env-dir: dev
-              aws-region: us-east-1
-              aws-account-id: 733051034790
-              aws-role: terragrunt
-              aws: aws
+            aws-region: us-east-1
+            aws-account-id: 733051034790
+            aws-role: terragrunt
+            aws: aws
 
           - env-dir: prod
-              aws-region: cn-north-1
-              aws-account-id: 527109613237
-              aws-role: terragrunt
-              aws: aws-cn
+            aws-region: cn-north-1
+            aws-account-id: 527109613237
+            aws-role: terragrunt
+            aws: aws-cn
 
     runs-on: ubuntu-latest
     permissions:
