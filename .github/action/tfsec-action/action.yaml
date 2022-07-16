@@ -1,0 +1,16 @@
+name: "tfsec check the terraform module"
+description: tfsec init and check
+inputs:
+  working_directory:
+    required: false
+    default: "."
+    description: "terraform directory"
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup tfsec
+      # https://github.com/aquasecurity/tfsec-action
+      uses: aquasecurity/tfsec-action@v1.0.0
+      with:
+        soft_fail: true
