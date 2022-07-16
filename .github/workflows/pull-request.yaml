@@ -75,7 +75,7 @@ jobs:
           aws-region: ${{ matrix.aws-region }}
           env-dir: ${{ matrix.env-dir }}
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
-          create_pr: true
+          create_pr: "true"
 
 
 
