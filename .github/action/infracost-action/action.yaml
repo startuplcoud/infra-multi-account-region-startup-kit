@@ -82,20 +82,20 @@ runs:
         
         # Infracost CLI commands can be run now
         infracost breakdown --config-file=infracost-generated.yml 
-        infracost breakdown --config-file=infracost-generated.yml --format=json --out-file=/tmp/infracost-base.json
+        infracost breakdown --config-file=infracost-generated.yml --format=json --out-file=/tmp/infracost.json
 
-    - name: Generate Infracost diff
-      shell: bash
-      env:
-        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
-      if: ${{ inputs.create_pr == 'true' }}
-      continue-on-error: true
-      # todo fix this issue
-      run: |
-        infracost diff --path=${TF_ROOT} \
-                          --format=json \
-                            --compare-to=/tmp/infracost-base.json \
-                            --out-file=/tmp/infracost.json
+#    - name: Generate Infracost diff
+#      shell: bash
+#      env:
+#        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
+#      if: ${{ inputs.create_pr == 'true' }}
+#      continue-on-error: true
+#      # todo fix this issue
+#      run: |
+#        infracost diff --path=${TF_ROOT} \
+#                          --format=json \
+#                            --compare-to=/tmp/infracost-base.json \
+#                            --out-file=/tmp/infracost.json
 
      # Posts a comment to the PR using the 'update' behavior.
      # This creates a single comment and updates it. The "quietest" option.
