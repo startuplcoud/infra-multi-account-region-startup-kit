@@ -138,6 +138,7 @@ Add the `AdministratorAccess` permission
 ![role2](images/role2.png)
 
 For policy also need to add the `"token.actions.githubusercontent.com:sub": "repo:{gituser}/{gitrepo}:ref:refs/heads/xxx"`,
+`xxx` means the branch name.
 this is used for to grant the boundary of git repository.
 Global Region policy:
 ```json
@@ -153,7 +154,8 @@ Global Region policy:
             "Condition": {
                 "StringEquals": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": "repo:{gituser}/{gitrepo}:ref:refs/heads/xxx"
+                  "token.actions.githubusercontent.com:sub": ["repo:{gituser}/{gitrepo}:ref:refs/heads/xxx",
+                                                              "repo:{gituser}/{gitrepo}:pull_request"]
                 }
             }
         }
@@ -174,7 +176,8 @@ AWS China region policy
             "Condition": {
                 "StringEquals": {
                    "token.actions.githubusercontent.com:aud": ["sts.cn-north-1.amazonaws.com.cn","sts.cn-northwest-1.amazonaws.com.cn"],
-                   "token.actions.githubusercontent.com:sub": "repo:{gituser}/{gitrepo}:ref:refs/heads/xxx"
+                   "token.actions.githubusercontent.com:sub": ["repo:{gituser}/{gitrepo}:ref:refs/heads/xxx",
+                                                               "repo:{gituser}/{gitrepo}:pull_request"]
                 }
             }
         }
@@ -280,6 +283,14 @@ remote_state {
 ### Encrypting using Vault
 
 ### Terraform code Vulnerability scan with GitHub Action
+
+#### tfsec 
+
+#### terrascan
+
+#### checkov
+
+
 
 ## Cost Preview
 
