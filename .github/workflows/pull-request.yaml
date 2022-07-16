@@ -58,9 +58,12 @@ jobs:
 
     runs-on: ubuntu-latest
     continue-on-error: true
+
     permissions:
       id-token: write
-      contents: read
+      contents: write
+      actions: write
+      security-events: write
 
     steps:
 

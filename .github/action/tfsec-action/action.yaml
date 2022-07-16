@@ -11,6 +11,13 @@ runs:
   steps:
     - name: setup tfsec
       # https://github.com/aquasecurity/tfsec-action
-      uses: aquasecurity/tfsec-action@v1.0.0
+
+      uses: aquasecurity/tfsec-sarif-action@v0.1.0
       with:
-        soft_fail: true
+        sarif_file: tfsec.sarif
+
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: tfsec.sarif
+        category: tfsec
