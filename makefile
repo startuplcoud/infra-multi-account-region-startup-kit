@@ -2,10 +2,14 @@ SHELL := /usr/bin/env bash
 export AWS_PROFILE=terragrunt
 export TF_PLUGIN_CACHE_DIR=$(HOME)/.terraform.d/plugin-cache
 
+init:
+	brew install terragrunt terraform sops
+
 format:
 	cd infra && terraform fmt -check
 	cd infra && terraform fmt -recursive
 	cd terragrunt && terragrunt hclfmt
+
 validate:
 	cd terragrunt/$(directory) && terragrunt run-all validate
 plan:

@@ -280,11 +280,14 @@ remote_state {
   }
 }
 ```
-### Encrypting using Vault
+### Encrypting using Vault and SOPS
+
+
+
 
 ### Terraform code Vulnerability scan with GitHub Action
 
-In the github action tfsec, after analysis terraform code, 
+In the pull request github action, after analysis terraform code, 
 the analysis result will automatically upload to the Github security adviser.
 For the better security solutions, we can use the vulnerability scan tools, such as
 [tfsec](https://github.com/aquasecurity/tfsec)
