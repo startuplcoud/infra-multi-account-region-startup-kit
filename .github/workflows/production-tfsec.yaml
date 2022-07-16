@@ -21,3 +21,5 @@ jobs:
         uses: actions/checkout@v3
       - name: tfsec terraform packages
         uses: ./.github/action/tfsec-action
+        with:
+          working_directory: "./infra/module"
