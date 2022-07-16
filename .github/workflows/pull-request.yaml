@@ -57,6 +57,7 @@ jobs:
             aws: aws-cn
 
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       id-token: write
       contents: read
@@ -74,6 +75,7 @@ jobs:
           aws-region: ${{ matrix.aws-region }}
           env-dir: ${{ matrix.env-dir }}
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
+          create_pr: 'true'
 
 
 
