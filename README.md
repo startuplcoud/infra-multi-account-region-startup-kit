@@ -284,17 +284,22 @@ remote_state {
 
 ### Terraform code Vulnerability scan with GitHub Action
 
-#### tfsec 
+In the github action tfsec, after analysis terraform code, 
+the analysis result will automatically upload to the Github security adviser.
+For the better security solutions, we can use the vulnerability scan tools, such as
+[tfsec](https://github.com/aquasecurity/tfsec)
+[terrascan](https://github.com/tenable/terrascan)
+[checkov](https://github.com/bridgecrewio/checkov)
 
-#### terrascan
-
-#### checkov
-
-
-
-## Cost Preview
-
+## Cost Preview in the Pull Request
 Cost estimates for Terraform with Infracost https://www.infracost.io/.
+How to estimate the aws resources we will spend for month,
+we can use the infracost to generate the total summary of the aws resources.
+directly check this PR,
+https://github.com/startuplcoud/infra-multi-account-region-startup-kit/pull/5
+
+
+
 
 
 
