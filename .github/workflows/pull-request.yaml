@@ -64,6 +64,7 @@ jobs:
       contents: write
       actions: write
       security-events: write
+      pull-requests: write
 
     steps:
 
