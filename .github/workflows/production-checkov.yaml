@@ -14,8 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
-      id-token: write
+      security-events: write
       contents: read
+      actions: read
+
+      id-token: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
