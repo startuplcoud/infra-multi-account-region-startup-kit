@@ -15,6 +15,21 @@ runs:
         iac_dir: "./infra/module"
         sarif_upload: true
 
+    - name: Fetch action
+      id: fetch
+      uses: Rishabh510/Path-lister-action@master
+      with:
+        path: "."
+        type: ".sarif"
+
+    - name: Output results
+      shell: bash
+      run: |
+        echo "Found ${{ steps.fetch.outputs.path_count }} file(s) with this extension:"
+        for i in ${{ steps.fetch.outputs.paths }}; do
+        echo $i
+        done
+
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
       with:
