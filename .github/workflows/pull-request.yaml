@@ -10,10 +10,13 @@ on:
 jobs:
   terrascan:
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
+
       - name: terrascan
+        continue-on-error: true
         uses: ./.github/action/terrascan-action
 
   checkov:
@@ -23,9 +26,21 @@ jobs:
         uses: actions/checkout@v3
 
       - name: checkov check
+        continue-on-error: true
         uses: ./.github/action/checkov-action
 
-  terragrunt-action:
+  tfsec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: tfsec
+        continue-on-error: true
+        uses: ./.github/action/tfsec-action
+
+
+  terragrunt-infracost-action:
     strategy:
       matrix:
         include:
@@ -47,16 +62,9 @@ jobs:
       contents: read
 
     steps:
+
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      - name: terragrunt packages
-        uses: ./.github/action/terragrunt-action
-        with:
-          role-to-assume: arn:aws:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
-          role-session-name: github-action
-          aws-region: ${{ matrix.aws-region }}
-          env-dir: ${{ matrix.env-dir }}
 
       - name: infracost packages
         uses: ./.github/action/infracost-action

@@ -7,6 +7,7 @@ on:
       - makefile
       - images/*
       - README.md
+
 jobs:
   checkov-action:
     name: checkov terraform modules

@@ -1,8 +1,8 @@
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
   version = "3.14.2"
-  cidr   = var.vpc_cidr
-  azs    = data.aws_availability_zones.current_zones.names
+  cidr    = var.vpc_cidr
+  azs     = data.aws_availability_zones.current_zones.names
 
   public_subnets = [
     for num in range(length(data.aws_availability_zones.current_zones.names)) :

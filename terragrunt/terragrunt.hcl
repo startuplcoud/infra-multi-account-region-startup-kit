@@ -1,8 +1,8 @@
 locals {
-  env_vars   = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
-  aws_region = local.env_vars["aws_region"]
-  project    = local.env_vars["project"]
-  account_id = local.env_vars["account_id"]
+  env_vars     = yamldecode(file("${find_in_parent_folders("env.yaml")}"))
+  aws_region   = local.env_vars["aws_region"]
+  project_name = local.env_vars["project"]
+  account_id   = local.env_vars["account_id"]
 }
 
 generate "providers" {
@@ -12,6 +12,11 @@ generate "providers" {
 provider "aws" {
   region = "${local.aws_region}"
   allowed_account_ids  = [ "${local.account_id}" ]
+  default_tags {
+   tags = {
+      project  = "${local.project_name}"
+   }
+  }
 }
 EOF
 }
@@ -23,11 +28,11 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket         = "${local.project}-terraform-state-${local.aws_region}"
+    bucket         = "${local.project_name}-terraform-state-${local.aws_region}"
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
     encrypt        = true
-    dynamodb_table = "${local.project}-terraform-lock-table"
+    dynamodb_table = "${local.project_name}-terraform-lock-table"
   }
 }
 
