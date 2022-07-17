@@ -1,14 +1,18 @@
 # Setup CI/CD workflow pipeline with multiple AWS regions & accounts using Terragrunt & Terraform
 [![Deploy Prod Infrastructure](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terragrunt.yaml/badge.svg?branch=main)](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terragrunt.yaml)
 [![Terrascan Check](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terrascan.yaml/badge.svg?branch=main)](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-terrascan.yaml)
+[![tfsec Check](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-tfsec.yaml/badge.svg)](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-tfsec.yaml)
+[![checkov](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-checkov.yaml/badge.svg)](https://github.com/startuplcoud/infra-multi-account-region-startup-kit/actions/workflows/production-checkov.yaml)
 
 Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions demo kit.  
 Goals:
-1.  Provisioning AWS infrastructure with terraform and terragrunt.
-2.  Support AWS with multiple accounts and regions.
-3.  Running the CI/CD workflow pipeline in parallel.
-4.  GitHub OIDC provider with AWS IAM role (without setting up AWS credentials' key)
-5.  Pattern: Separate terraform modules, keep the minimum AWS resources, and reduce duplicated codes. 
+1. Provisioning AWS infrastructure with terraform and terragrunt.
+2. Support AWS with multiple accounts and regions.
+3. Running the CI/CD workflow pipeline in parallel.
+4. GitHub OIDC provider with AWS IAM role (without setting up AWS credentials' key)
+5. Pattern: Separate terraform modules, keep the minimum AWS resources, and reduce duplicated codes. 
+6. Security solutions with vulnerability scan tools (tfsec, checkov, terrascan, etc.) and SOPS.
+7. AWS Resources Cost estimates preview with Infracost.
 
 ## AWS Services Architecture
 This tutorial will show how to set up the AWS VPC and EC2 autoscaling group with the application load balancer and how to use the terraform & terragrunt to manage the AWS infrastructure.
