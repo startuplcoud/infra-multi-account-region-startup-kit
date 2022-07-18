@@ -5,7 +5,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v1
+      uses: terraform-linters/setup-tflint@v2
       with:
         tflint_version: v0.38.1
 

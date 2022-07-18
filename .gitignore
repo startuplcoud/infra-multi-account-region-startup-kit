@@ -51,4 +51,4 @@ plan.json
 .tflint.hcl
 infracost-generated.yml
 
-
+*.tfvars.json

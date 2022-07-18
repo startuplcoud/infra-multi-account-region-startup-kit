@@ -30,9 +30,14 @@ runs:
         terraform_wrapper: false
 
     - name: Setup Terragrunt
-      uses: autero1/action-terragrunt@v1.1.0
+      uses: autero1/action-terragrunt@v1.1.1
       with:
         terragrunt_version: 0.37.3
+
+    - name: Sops Binary Installer
+      uses: mdgreenwald/mozilla-sops-action@v1.2.0
+      with:
+        version: 'v3.7.3' # default is latest stable
 
     - name: GitHub OIDC Auth to assume AWS Role
       uses: aws-actions/configure-aws-credentials@v1
