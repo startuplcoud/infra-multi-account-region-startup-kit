@@ -3,7 +3,7 @@ export AWS_PROFILE=terragrunt
 export TF_PLUGIN_CACHE_DIR=$(HOME)/.terraform.d/plugin-cache
 
 init:
-	brew install terragrunt terraform sops
+	brew install terragrunt terraform sops gnupg
 
 format:
 	cd infra && terraform fmt -check

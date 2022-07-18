@@ -11,8 +11,9 @@ Goals:
 3. Running the CI/CD workflow pipeline in parallel.
 4. GitHub OIDC provider with AWS IAM role (without setting up AWS credentials' key)
 5. Pattern: Separate terraform modules, keep the minimum AWS resources, and reduce duplicated codes. 
-6. Security solutions with vulnerability scan tools (tfsec, checkov, terrascan, etc.) and SOPS.
-7. AWS Resources Cost estimates preview with Infracost.
+6. Security solutions with vulnerability scan tools (tfsec, checkov, terrascan, etc.).
+7. Store the credentials key such as password in the git repository with SOPS.
+8. AWS Resources Cost estimates preview with Infracost.
 
 ## AWS Services Architecture
 This tutorial will show how to set up the AWS VPC and EC2 autoscaling group with the application load balancer and how to use the terraform & terragrunt to manage the AWS infrastructure.
@@ -284,7 +285,65 @@ remote_state {
   }
 }
 ```
-### Encrypting using Vault and SOPS
+### Store the password with SPOS
+
+#### install SOPS and gnupg
+    brew install sops gnupg
+
+#### PGP fingerprint setup (NOT recommended)
+PGP will remove in future version. https://github.com/mozilla/sops/issues/727
+
+input the `real name` and `email` and `password` with the commands:
+`gpg --gen-key` 
+    
+```
+pub   ed25519 2022-07-18 [SC] [expires：2024-07-17]
+      01D0D800C76AC893E74990B44BB1CE513349E336 (fingerprint key)
+uid                      winton <365504029@qq.com>
+sub   cv25519 2022-07-18 [E] [expires：2024-07-17]
+```
+### create secret key with SOPS  (NOT recommended)
+
+    sops -pgp 01D0D800C76AC893E74990B44BB1CE513349E336 ./secrets.yaml
+    
+Edit in the YAML file set the db_password like this and save it to local file `secrets.yaml`: 
+```yaml
+db_password: xxxxxx
+```
+generator yaml file with SOPS.
+```yaml
+    db_password: ENC[AES256_GCM,data:Glso+g==,iv:xa1LZUNbVg1Mno9x7ywXz2U2PFleoEr3q8ZO6G3BuVo=,tag:Mw2xjSieVsP49qFYnlcsKQ==,type:str]
+    sops:
+        kms: []
+        gcp_kms: []
+        azure_kv: []
+        hc_vault: []
+        age: []
+        lastmodified: "2022-07-18T08:33:15Z"
+        mac: ENC[AES256_GCM,data:kyWGR+oO6KOvZj6AcLBQca04dhtN4fD+W2sz2X6U+rKe21hBzF8SldsHSgZJcK3L+zmHduFYK8yAbnCXlp/n9wFOzEiC+LrsQJZ2MKUTwLdSsRuz8eFJxChcGPu+2bcduiHb/oQDOIhfwnNy9T8SOfcGC13SaAGJu3n7GCIi7jU=,iv:GFRaLFdVQYm3uyvrtxo/dzZzXSmpzRjidFPuDvi7tkE=,tag:pqGgFOEgHBIAQRz7ZXCPqA==,type:str]
+        pgp:
+            - created_at: "2022-07-18T08:32:33Z"
+              enc: |
+                -----BEGIN PGP MESSAGE-----
+    
+                hF4DD+gJKRAEVSYSAQdA6uH391JK8rksm63xardQcwATT5nrC9mz7N3cafJQ/xkw
+                zqHX1L1jEy40N1wh/PjYgf8f1c46jLfeTQqGSn3tdxLo2eIaV86/jOqp4e2yO2FK
+                1GgBCQIQa1dBfCd873wIsj86KfUUX5rEXainUegvT+JF0QkPVZ4PgC7HFbAOtG07
+                izdEf+5k5qj6Z3dy7Z3r2M6bVp7te+BYXt56yohCDqVqxsWDcis6pfCWD61w56+8
+                PtJqcXGFNfTKmg==
+                =XdTX
+                -----END PGP MESSAGE-----
+              fp: 01D0D800C76AC893E74990B44BB1CE513349E336
+        unencrypted_suffix: _unencrypted
+        version: 3.7.3
+```
+
+
+
+#### set up the AWS IAM role and pgp fingerprint
+    
+    
+    
 
 
 
