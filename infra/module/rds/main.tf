@@ -24,10 +24,10 @@ module "postgres" {
   db_name  = var.db_name # create database name
   username = var.username
 
-  identifier = "${var.identifier}-${var.environment}"
-  port       = 5432
-  password   = var.password # store in the states
-
+  identifier             = "${var.identifier}-${var.environment}"
+  port                   = 5432
+  password               = var.password # store in the states
+  create_random_password = false
   subnet_ids             = var.subnet_ids
   vpc_security_group_ids = [module.security_group.security_group_id]
 

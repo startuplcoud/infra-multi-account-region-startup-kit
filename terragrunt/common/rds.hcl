@@ -13,7 +13,7 @@ locals {
   identifier  = "test"
   username    = "postgres"
   environment = "development"
-  secrets     = yamldecode(sops_decrypt_file("../../secrets.dev.yaml"))
+  secrets     = yamldecode(sops_decrypt_file("../..//secrets.dev.yaml"))
   db_password = local.secrets["db_password"]
 }
 
