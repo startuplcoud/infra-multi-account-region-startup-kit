@@ -7,6 +7,8 @@ terraform {
 }
 locals {
   environment = "development"
+  secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.dev.yaml"))
+  db_password = local.secrets["db_password"]
 }
 
 include "common" {
@@ -14,6 +16,8 @@ include "common" {
   expose = true
 }
 
+
 inputs = {
   environment = local.environment
+  password    = local.db_password
 }
