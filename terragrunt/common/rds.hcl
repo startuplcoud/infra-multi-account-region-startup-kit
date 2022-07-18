@@ -13,6 +13,8 @@ locals {
   identifier  = "test"
   username    = "postgres"
   environment = "development"
+  secrets     = yamldecode(sops_decrypt_file("../../secrets.dev.yaml"))
+  db_password = local.secrets["db_password"]
 }
 
 inputs = {
@@ -23,4 +25,5 @@ inputs = {
   db_name              = local.db_name
   identifier           = local.identifier
   environment          = local.environment
+  password             = local.db_password
 }

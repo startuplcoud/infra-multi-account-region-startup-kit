@@ -21,10 +21,12 @@ module "postgres" {
   create_db_subnet_group          = true
   db_subnet_group_use_name_prefix = false
 
-  db_name    = var.db_name # create database name
-  username   = var.username
+  db_name  = var.db_name # create database name
+  username = var.username
+
   identifier = "${var.identifier}-${var.environment}"
   port       = 5432
+  password   = var.password # store in the states
 
   subnet_ids             = var.subnet_ids
   vpc_security_group_ids = [module.security_group.security_group_id]

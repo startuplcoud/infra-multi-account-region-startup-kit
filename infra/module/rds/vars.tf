@@ -29,3 +29,6 @@ variable "username" {
 variable "environment" {
   type = string
 }
+variable "password" {
+  type = string
+}
