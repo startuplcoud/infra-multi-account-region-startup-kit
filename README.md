@@ -285,13 +285,19 @@ remote_state {
   }
 }
 ```
-### Store the password with SPOS
+### Store the sensitive values in the git repository with SPOS
 
 #### install SOPS and gnupg
     brew install sops gnupg
 
-#### PGP fingerprint setup (NOT recommended)
+#### PGP fingerprint setup in local (NOT recommended)
 PGP will remove in future version. https://github.com/mozilla/sops/issues/727
+
+issues may have: https://github.com/mozilla/sops/issues/304
+need to append in the .bashrc
+
+    GPG_TTY=$(tty)
+    export GPG_TTY
 
 input the `real name` and `email` and `password` with the commands:
 `gpg --gen-key` 
@@ -338,10 +344,85 @@ generator yaml file with SOPS.
         version: 3.7.3
 ```
 
+read the secrets.yaml with terragrunt
+```hcl
+# database config read the password from local secrets
+locals {
+   environment = "development"
+   secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.yaml"))
+   db_password = local.secrets["db_password"]
+ }
+```
+apply or plan the rds module, we must provide the gpg password to retrieve the decryption yaml.
+
 
 
 #### set up the AWS IAM role and pgp fingerprint
     
+1. Create AWS KMS key when using the SOPS to encrypt the sensitive values.
+2. For multiple regions apply, we need to enable the multiple region key option.
+3. For multiple accounts, we need to add multiple account's id to the key policies and allow other accounts IAM role have the permission to access the key.
+4. In order to avoid if the AWS KMS is broken, we also need use the gpg fingerprint to rotate the key.
+5. For different env or different regions (AWS China or global region), we can create the SOPS rules `.sops.yaml` to generate different environment key.
+6. Before using the SOPS managed kms key, need to create it firstly.
+7. Make sure the AWS github action IAM role and local AWS user role have the permission to encrypt or decrypt with the ksm key.
+
+##### apply terragrunt module to generate the key
+copy the outputs values `kms_arn` to create the `.sops.yaml`
+
+    make apply-module directory=kms-global/us-east-1 module=kms_sops
+
+and copy the gpg fingerprint values with this command `gpg --fingerprint 365504029@qq.com`
+
+    pub   ed25519 2022-07-18 [SC] [expires：2024-07-17]
+          01D0 D800 C76A C893 E749  90B4 4BB1 CE51 3349 E336
+    uid             [ uid ] winton <365504029@qq.com>
+    sub   cv25519 2022-07-18 [E] [expires：2024-07-17]
+
+##### create `.sops.yaml` rules
+
+```yaml
+creation_rules:
+  - path_regex: \.dev\.yaml$
+     # aws kms key global region
+    kms: 'arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9'
+    aws_profile: terragrunt
+    pgp: '01D0D800C76AC893E74990B44BB1CE513349E336' 
+
+     # aws china region
+  - path_regex: \.prod\.yaml$
+    aws_profile: wwc
+    kms: 'arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9'
+    pgp: '01D0D800C76AC893E74990B44BB1CE513349E336' 
+
+```
+
+
+##### create the aws_secrets.yaml with the kms 
+
+    sops --kms arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9 --aws-profile terragrunt aws_secrets.yaml
+
+generate aws_secrets.yaml key
+
+```yaml
+db_password: ENC[AES256_GCM,data:mWfM,iv:MWDxyxJC/t8FZVz4Yb96X6ljb2IYNPvr8ogluUBjObA=,tag:N/NS8fg1ESANoU99ZBH4ng==,type:str]
+sops:
+    kms:
+        - arn: arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9
+          created_at: "2022-07-18T13:25:15Z"
+          enc: AQICAHii8VL6x9Jg3jIvFJMPPpLwfw9zeMnvSPCyRWIaS7Uq8gGM6FvQj+l57Q0t0q5PhDokAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMtAsUM/VmebJjVqYIAgEQgDsIYNbFCFHWDKCTNJv4ti1KxiXI2lvOTr1+Shfbd14QBk0mVHsJ7o1ZNJqsKk71ZP+I+jcYwV6ZvwklBQ==
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-07-18T13:25:41Z"
+    mac: ENC[AES256_GCM,data:2yqu+yxZMVTXd5lZku0O1HtP2CFuy6EHOqUmiHCh7YSxdgYOJejQC5bsIXtpOD7/i5RxFUKTwYC6ViQeWnTSw5DRI7m/jIe2X/XlCpGHCowEba/HLPJ5HUUR3gVCzfxOsm8w8u6f7WdFMbHXf5jAvDdKb+YjUpBTAJkDWJTBX0U=,iv:coNUdpqYDVf5HhJfg5cVbmanL5iOJXV+D9d/kjTm0dE=,tag:S8LgUsQDxzU88xXOJ1tBzQ==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.7.3
+
+```
+
     
     
 
