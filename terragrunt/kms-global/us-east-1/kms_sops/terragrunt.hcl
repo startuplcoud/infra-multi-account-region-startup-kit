@@ -8,7 +8,17 @@ terraform {
     commands = get_terraform_commands_that_need_vars()
   }
 }
+locals {
+  role_arn_list = [
+    "arn:aws:iam::733051034790:role/terragrunt"
+  ]
+  user_arn_list = [
+    "arn:aws:iam::733051034790:user/admin"
+  ]
 
+}
 inputs = {
-  key_alias = "terragrunt-demo"
+  key_alias     = "terragrunt-demo"
+  role_arn_list = local.role_arn_list
+  user_arn_list = local.user_arn_list
 }
