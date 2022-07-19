@@ -5,9 +5,10 @@ include {
 terraform {
   source = "../../../..//infra/module/rds"
 }
+
 locals {
   environment = "development"
-  secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.dev.yaml"))
+  secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.global.yaml"))["dev"]
   db_password = local.secrets["db_password"]
 }
 
