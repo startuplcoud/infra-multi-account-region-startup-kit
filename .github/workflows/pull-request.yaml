@@ -110,7 +110,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: infracost
-          path: /tmp/
+          path: /tmp
+
+      - name: find download file
+        run: ls -R
+        working-directory: /tmp
 
       - name: file find action
         id: fetch
