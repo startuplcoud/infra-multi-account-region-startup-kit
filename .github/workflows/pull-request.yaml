@@ -99,11 +99,19 @@ jobs:
       security-events: write
       pull-requests: write
     steps:
+      - name: Setup Infracost
+        # https://github.com/infracost/actions
+        # https://github.com/infracost/actions/tree/master/setup for other inputs
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
       - name: download-artifact
         uses: actions/download-artifact@v3
         with:
           name: infracost
           path: /tmp/*
+
       - name: concat the infracost result
         run: |
           infracost output -path "/tmp/infracost-*.json" --format json --out-file /tmp/infracost.json
