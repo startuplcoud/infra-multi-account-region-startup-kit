@@ -115,31 +115,16 @@ jobs:
       - name: find download file
         run: ls -R ~/infracost
 
-      - name: file find action
-        id: fetch
-        uses: Rishabh510/Path-lister-action@master
-        with:
-          path: "~/infracost/"
-          type: ".json"
-
-      - name: Output results
-        shell: bash
-        run: |
-          echo "Found ${{ steps.fetch.outputs.path_count }} file(s) with this extension:"
-          for i in ${{ steps.fetch.outputs.paths }}; do
-          echo $i
-          done
-
       - name: concat the infracost result
         run: |
-          infracost output -path "~/infracost/infracost-*.json" --format json --out-file /tmp/infracost.json
+          infracost output -path "/home/runner/infracost/infracost-*.json" --format json --out-file /tmp/infracost.json
 
       - name: Post Infracost comment
         run: |
           infracost comment github --path=/tmp/infracost.json \
                                       --repo=$GITHUB_REPOSITORY \
-                                      --github-token=${{github.token}} \
-                                      --pull-request=${{github.event.pull_request.number}} \
+                                      --github-token=${{ github.token }} \
+                                      --pull-request=${{ github.event.pull_request.number }} \
                                       --behavior=update
 
           
