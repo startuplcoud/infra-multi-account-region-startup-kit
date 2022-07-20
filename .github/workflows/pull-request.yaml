@@ -118,6 +118,7 @@ jobs:
       - name: concat the infracost result
         working-directory: /home/runner/infracost/
         run: |
+          ls -R 
           infracost output -path "infracost-*.json" --format json --out-file /tmp/infracost.json
 
       - name: Post Infracost comment
