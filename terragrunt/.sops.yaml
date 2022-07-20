@@ -1,0 +1,13 @@
+creation_rules:
+  - path_regex: \.global\.yaml$
+    #  aws kms key global region
+    # aws iam user/terragrunt role have the kms key permission
+    kms: 'arn:aws:kms:us-east-1:733051034790:key/mrk-222444666c2f4b62ad5066365e84aeb8'
+#    aws_profile: terragrunt
+    pgp: '01D0D800C76AC893E74990B44BB1CE513349E336'
+
+    # aws china region
+  - path_regex: \.china\.yaml$
+#    aws_profile: wwc
+    kms: 'arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9'
+    pgp: '01D0D800C76AC893E74990B44BB1CE513349E336'

@@ -7,6 +7,14 @@ dependency "vpc" {
   }
 }
 
+dependencies {
+  paths = [
+    "${get_original_terragrunt_dir()}/..//vpc",
+    "${get_original_terragrunt_dir()}/..//rds"
+  ]
+}
+
+
 locals {
   port    = 80
   ssh_key = "startupcloud"

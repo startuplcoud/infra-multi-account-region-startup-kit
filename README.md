@@ -344,7 +344,7 @@ generator yaml file with SOPS.
         version: 3.7.3
 ```
 
-read the secrets.yaml with terragrunt
+decrypt the secrets.yaml with terragrunt
 ```hcl
 # database config read the password from local secrets
 locals {
@@ -368,11 +368,15 @@ apply or plan the rds module, we must provide the gpg password to retrieve the d
 7. Make sure the AWS github action IAM role and local AWS user role have the permission to encrypt or decrypt with the ksm key.
 
 ##### apply terragrunt module to generate the key
-copy the outputs values `kms_arn` to create the `.sops.yaml`
+Firstly, need to create KMS key to generate the SOPS secret credentials, for multiple accounts, need to add the 
+inputs values with the account id IAM role arn or IAM user arn, we need to use a single KMS key to manage all the resources.
+Apply the kms_sops module to get the `kms_arn` output value, then create the `.sops.yaml` rules templates.
+
 
     make apply-module directory=kms-global/us-east-1 module=kms_sops
 
-and copy the gpg fingerprint values with this command `gpg --fingerprint 365504029@qq.com`
+
+also copy the gpg fingerprint values with this command `gpg --fingerprint 365504029@qq.com`
 
     pub   ed25519 2022-07-18 [SC] [expires：2024-07-17]
           01D0 D800 C76A C893 E749  90B4 4BB1 CE51 3349 E336
@@ -383,51 +387,73 @@ and copy the gpg fingerprint values with this command `gpg --fingerprint 3655040
 
 ```yaml
 creation_rules:
-  - path_regex: \.dev\.yaml$
+  - path_regex: \.global\.yaml$
      # aws kms key global region
-    kms: 'arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9'
+    kms: 'arn:aws:kms:us-east-1:733051034790:key/mrk-222444666c2f4b62ad5066365e84aeb8'
     aws_profile: terragrunt
     pgp: '01D0D800C76AC893E74990B44BB1CE513349E336' 
 
      # aws china region
-  - path_regex: \.prod\.yaml$
+  - path_regex: \.china\.yaml$ 
     aws_profile: wwc
-    kms: 'arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9'
+    kms: 'arn:aws-cn:kms:cn-northwest-1:733051034790:key/mrk-f24f28b41b0d49419df429946e774safd'
     pgp: '01D0D800C76AC893E74990B44BB1CE513349E336' 
 
 ```
+##### generate the dev environment secrets.global.yaml in the terragrunt directory
+create file name extension must match the regex pattern `.global.yaml`
 
+     AWS_PROFILE=terragrunt sops secrets.global.yaml
 
-##### create the aws_secrets.yaml with the kms 
-
-    sops --kms arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9 --aws-profile terragrunt aws_secrets.yaml
-
-generate aws_secrets.yaml key
-
+edit the secret values in the yaml file:
 ```yaml
-db_password: ENC[AES256_GCM,data:mWfM,iv:MWDxyxJC/t8FZVz4Yb96X6ljb2IYNPvr8ogluUBjObA=,tag:N/NS8fg1ESANoU99ZBH4ng==,type:str]
+dev: # for the aws dev account 
+  db_password: xxxxxx
+#stage: # for aws stage account
+#  db_password: xxxxxx
+```
+generate the values, we need to remove the generated section `aws_profile`
+```yaml
+dev:
+    db_password: ENC[AES256_GCM,data:kmtaxwBA,iv:FelpjBTuPMwfE2IueHh7fWxrHcKwGZf15oar9JeDpsA=,tag:wmkIHhAiUkH1iseqF7R0vw==,type:int]
 sops:
     kms:
-        - arn: arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9
-          created_at: "2022-07-18T13:25:15Z"
-          enc: AQICAHii8VL6x9Jg3jIvFJMPPpLwfw9zeMnvSPCyRWIaS7Uq8gGM6FvQj+l57Q0t0q5PhDokAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMtAsUM/VmebJjVqYIAgEQgDsIYNbFCFHWDKCTNJv4ti1KxiXI2lvOTr1+Shfbd14QBk0mVHsJ7o1ZNJqsKk71ZP+I+jcYwV6ZvwklBQ==
+        - arn: arn:aws:kms:us-east-1:733051034790:key/mrk-222444666c2f4b62ad5066365e84aeb8
+          created_at: "2022-07-19T15:52:49Z"
+          enc: AQICAHgDKXq49C3kkzpf84wGoN9nR2bnic4C850M0a1Q6F7ZywHwFjdqpxJAFhhcwrNaDC3QAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMTCX5INMF7egCoTKZAgEQgDtCO7U4BfdrVZMFxJdvjq3BRoHLgWceFaLCQPxwdbVmMmyWe9R2WFvfAX48MVEvBIP69fdsstn2UMSFUQ==
+          # aws_profile: terragrunt # disable 
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2022-07-18T13:25:41Z"
-    mac: ENC[AES256_GCM,data:2yqu+yxZMVTXd5lZku0O1HtP2CFuy6EHOqUmiHCh7YSxdgYOJejQC5bsIXtpOD7/i5RxFUKTwYC6ViQeWnTSw5DRI7m/jIe2X/XlCpGHCowEba/HLPJ5HUUR3gVCzfxOsm8w8u6f7WdFMbHXf5jAvDdKb+YjUpBTAJkDWJTBX0U=,iv:coNUdpqYDVf5HhJfg5cVbmanL5iOJXV+D9d/kjTm0dE=,tag:S8LgUsQDxzU88xXOJ1tBzQ==,type:str]
-    pgp: []
+    lastmodified: "2022-07-19T15:53:18Z"
+    mac: ENC[AES256_GCM,data:fGOwBKVLCuOOJpyIWMAdZYLVYq4XP1mmfQgnabsKa6qB1o3Zke5q3lW+QSXBjOMMWqnM4TTNMYrJIuxqVoKKo9Jsm+Syq7PUrcLvzE+VcvrlySwpTgXikzczqryHzjvFQHGI+j7uV7Sw5p+8/gozCQ7ay1hfmmHgCeQekBRCjo4=,iv:/tVYsiXabhdtuItkPGbZOYkFuifEdgKEZxpOz5lxucY=,tag:LH0aWW4OjRIz7rFfZuIiww==,type:str]
+    pgp:
+        - created_at: "2022-07-19T15:52:49Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hF4DD+gJKRAEVSYSAQdAgm5i6ZNi5K59CTVo6bbawyhJnISJ7oESN7DVP8k2RR8w
+            r4ga9LnNwGDHlL8it8IVaoYgaBjGB/vOJG0vrlzUH/fvfz2N1rumylVcMKSqEdjm
+            1GgBCQIQ3IIepfyi7mme9PvDs8lEn1bb4IbGUEoubRBmtkE/vC5IHBuveAANsAUK
+            hfqWs7mGDgoWD0jrusNuYQON9cyvy1xkikBeSlayibuYPYqcsDHd+pGCzSUpjZSH
+            m1AzxfgAUUULow==
+            =MVSz
+            -----END PGP MESSAGE-----
+          fp: 01D0D800C76AC893E74990B44BB1CE513349E336
     unencrypted_suffix: _unencrypted
     version: 3.7.3
-
 ```
 
+configure the `db_password` value with terragrunt
+```hcl
+locals {
+  environment = "development"
+  secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.global.yaml"))["dev"]
+  db_password = local.secrets["db_password"]
+}
+```
     
-    
-
-
-
 
 ### Terraform code Vulnerability scan with GitHub Action
 
@@ -444,6 +470,11 @@ How to estimate the aws resources we will spend for month,
 we can use the infracost to generate the total summary of the aws resources.
 directly check this PR,
 https://github.com/startuplcoud/infra-multi-account-region-startup-kit/pull/5
+
+## Contact
+
+If you have any question, please contact with the email contact@startupcloud.tech
+
 
 
 

@@ -12,11 +12,12 @@ locals {
   role_arn_list = [
     "arn:aws:iam::733051034790:role/terragrunt"
   ]
+
   user_arn_list = [
     "arn:aws:iam::733051034790:user/admin"
   ]
-
 }
+
 inputs = {
   key_alias     = "terragrunt-demo"
   role_arn_list = local.role_arn_list
