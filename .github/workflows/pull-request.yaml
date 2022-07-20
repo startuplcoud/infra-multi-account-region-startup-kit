@@ -87,6 +87,39 @@ jobs:
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
           create_pr: 'true'
 
+  infracost-report:
+    needs:
+      - terragrunt-infracost-action
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: write
+      actions: write
+      security-events: write
+      pull-requests: write
+    steps:
+      - name: download-artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: infracost
+          path: /tmp/*
+      - name: concat the infracost result
+        run: |
+          infracost output -path "/tmp/infracost-*.json" --format json --out-file /tmp/infracost.json
+
+      - name: Post Infracost comment
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+                                      --repo=$GITHUB_REPOSITORY \
+                                      --github-token=${{github.token}} \
+                                      --pull-request=${{github.event.pull_request.number}} \
+                                      --behavior=update
+
+          
+
+
+
 
 
 
