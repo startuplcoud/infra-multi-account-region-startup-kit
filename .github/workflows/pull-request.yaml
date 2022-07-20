@@ -112,6 +112,21 @@ jobs:
           name: infracost
           path: /tmp/*
 
+      - name: file find action
+        id: fetch
+        uses: Rishabh510/Path-lister-action@master
+        with:
+          path: "/tmp/"
+          type: ".json"
+
+      - name: Output results
+        shell: bash
+        run: |
+          echo "Found ${{ steps.fetch.outputs.path_count }} file(s) with this extension:"
+          for i in ${{ steps.fetch.outputs.paths }}; do
+          echo $i
+          done
+
       - name: concat the infracost result
         run: |
           infracost output -path "/tmp/infracost-*.json" --format json --out-file /tmp/infracost.json
