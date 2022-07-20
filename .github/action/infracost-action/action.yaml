@@ -55,7 +55,7 @@ runs:
 
     - name: terragrunt plan
       shell: bash
-      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-ignore-external-dependencies plan -out tfplan.binary
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-non-interactive --terragrunt-ignore-external-dependencies plan -out tfplan.binary
 
     - name: check the infra cost
       shell: bash
