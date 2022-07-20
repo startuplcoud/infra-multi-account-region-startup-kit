@@ -87,7 +87,8 @@ runs:
         
         # Infracost CLI commands can be run now
         infracost breakdown --config-file=infracost-generated.yml 
-        infracost breakdown --config-file=infracost-generated.yml --format=json --out-file=/tmp/infracost.json
+        # generate 
+        infracost breakdown --config-file=infracost-generated.yml --path ${{ inputs.env-dir }} --format=json --out-file=/tmp/infracost.json
 
 #    - name: Generate Infracost diff
 #      shell: bash
