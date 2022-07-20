@@ -56,6 +56,12 @@ jobs:
             aws-role: terragrunt
             aws: aws-cn
 
+          - env-dir: stage
+            aws-region: ap-southeast-1
+            aws-account-id: 594962198840
+            aws-role: terragrunt
+            aws: aws
+
     runs-on: ubuntu-latest
     continue-on-error: true
 
