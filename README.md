@@ -368,13 +368,15 @@ apply or plan the rds module, we must provide the gpg password to retrieve the d
 7. Make sure the AWS github action IAM role and local AWS user role have the permission to encrypt or decrypt with the ksm key.
 
 ##### apply terragrunt module to generate the key
-copy the outputs values `kms_arn` to create the `.sops.yaml`
+Firstly, need to create KMS key to generate the SOPS secret credentials, for multiple accounts, need to add the 
+inputs values with the account id IAM role arn or IAM user arn, we need to use a single KMS key to manage all the resources.
+Apply the kms_sops module to get the `kms_arn` output value, then create the `.sops.yaml` rules templates.
+
 
     make apply-module directory=kms-global/us-east-1 module=kms_sops
 
 
-
-and copy the gpg fingerprint values with this command `gpg --fingerprint 365504029@qq.com`
+also copy the gpg fingerprint values with this command `gpg --fingerprint 365504029@qq.com`
 
     pub   ed25519 2022-07-18 [SC] [expires：2024-07-17]
           01D0 D800 C76A C893 E749  90B4 4BB1 CE51 3349 E336
@@ -407,6 +409,8 @@ edit the secret values in the yaml file:
 ```yaml
 dev: # for the aws dev account 
   db_password: xxxxxx
+#stage: # for aws stage account
+#  db_password: xxxxxx
 ```
 generate the values, we need to remove the generated section `aws_profile`
 ```yaml
@@ -441,7 +445,7 @@ sops:
     version: 3.7.3
 ```
 
-retrieve the `db_password` value with terragrunt
+configure the `db_password` value with terragrunt
 ```hcl
 locals {
   environment = "development"
@@ -450,10 +454,6 @@ locals {
 }
 ```
     
-    
-
-
-
 
 ### Terraform code Vulnerability scan with GitHub Action
 
@@ -470,6 +470,11 @@ How to estimate the aws resources we will spend for month,
 we can use the infracost to generate the total summary of the aws resources.
 directly check this PR,
 https://github.com/startuplcoud/infra-multi-account-region-startup-kit/pull/5
+
+## Contact
+
+If you have any question, please contact with the email contact@startupcloud.tech
+
 
 
 
