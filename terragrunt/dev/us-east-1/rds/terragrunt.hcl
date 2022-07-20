@@ -17,7 +17,6 @@ include "common" {
   expose = true
 }
 
-
 inputs = {
   environment = local.environment
   password    = local.db_password

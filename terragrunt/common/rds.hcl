@@ -13,7 +13,6 @@ locals {
   identifier  = "test"
   username    = "postgres"
   environment = "development"
-
 }
 
 inputs = {
@@ -24,5 +23,4 @@ inputs = {
   db_name              = local.db_name
   identifier           = local.identifier
   environment          = local.environment
-
 }

@@ -400,6 +400,7 @@ creation_rules:
     pgp: '01D0D800C76AC893E74990B44BB1CE513349E336' 
 
 ```
+
 ##### generate the dev environment secrets.global.yaml in the terragrunt directory
 create file name extension must match the regex pattern `.global.yaml`
 

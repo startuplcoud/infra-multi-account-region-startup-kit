@@ -9,6 +9,7 @@ module "vpc" {
     cidrsubnet(var.vpc_cidr, 8, num + length(data.aws_availability_zones.current_zones.names) + 1)
     ///  //10.0.3.0/24,10.0.4.0/24,10.0.5.0/24
   ]
+
   private_subnets = [
     for num in range(length(data.aws_availability_zones.current_zones.names)) :
     cidrsubnet(var.vpc_cidr, 8, num)
@@ -31,6 +32,7 @@ module "vpc" {
     Terraform   = "true"
     Environment = var.environment
   }
+
   default_vpc_tags = {
     Name = var.vpc_name
   }

@@ -18,6 +18,7 @@ variable "subnet_ids" {
 variable "db_name" {
   type = string
 }
+
 variable "identifier" {
   type = string
 }
@@ -29,6 +30,7 @@ variable "username" {
 variable "environment" {
   type = string
 }
+
 variable "password" {
   type = string
 }

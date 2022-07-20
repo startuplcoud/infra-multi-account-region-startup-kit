@@ -3,7 +3,7 @@ include {
 }
 
 terraform {
-  source = "../../../..//infra/module/kms_sops"
+  source = "../../../..//infra/env_module/kms_sops"
   extra_arguments "common_vars" {
     commands = get_terraform_commands_that_need_vars()
   }

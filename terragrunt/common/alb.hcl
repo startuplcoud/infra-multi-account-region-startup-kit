@@ -16,13 +16,13 @@ dependency "autoscale" {
 
 
 locals {
-  port         = 80
+  target_port  = 80
   service_name = "nginx"
 }
 
 inputs = {
   service_name           = local.service_name
-  port                   = local.port
+  target_port            = local.target_port
   vpc_id                 = dependency.vpc.outputs.vpc_id
   load_balancer_subnets  = dependency.vpc.outputs.public_subnet_ids
   autoscaling_group_name = dependency.autoscale.outputs.autoscaling_group_name

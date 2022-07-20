@@ -10,7 +10,7 @@ variable "load_balancer_subnets" {
   type = list(string)
 }
 
-variable "port" {
+variable "target_port" {
   type = number
 }
 

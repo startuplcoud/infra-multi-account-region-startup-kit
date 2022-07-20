@@ -1,4 +1,3 @@
-
 module "security_group" {
   source          = "terraform-aws-modules/security-group/aws"
   name            = "${var.identifier}-${var.environment}-rds-security-group"

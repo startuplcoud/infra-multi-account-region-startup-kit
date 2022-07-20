@@ -13,8 +13,7 @@ resource "aws_launch_configuration" "configuration" {
 }
 
 
-
-resource "aws_autoscaling_group" "auto_group" {
+resource "aws_autoscaling_group" "autoscaling_group" {
   max_size                  = 4
   min_size                  = 2
   launch_configuration      = aws_launch_configuration.configuration.name
