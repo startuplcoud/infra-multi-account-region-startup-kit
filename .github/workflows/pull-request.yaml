@@ -113,8 +113,7 @@ jobs:
           path: ~/infracost
 
       - name: find download file
-        run: ls -R
-        working-directory: ~/infracost
+        run: ls -R ~/infracost
 
       - name: file find action
         id: fetch
