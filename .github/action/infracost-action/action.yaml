@@ -96,20 +96,6 @@ runs:
         name: infracost
         path: /tmp/infracost-${{ inputs.env-dir }}-${{ inputs.aws-region }}.json
 
-    
-
-
-#    - name: Post Infracost comment
-#      shell: bash
-#      env:
-#        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
-#      if: ${{ inputs.create_pr == 'true' }}
-#      run: |
-#        infracost comment github --path=/tmp/infracost.json \
-#                                    --repo=$GITHUB_REPOSITORY \
-#                                    --github-token=${{github.token}} \
-#                                    --pull-request=${{github.event.pull_request.number}} \
-#                                    --behavior=update
 
 
 
