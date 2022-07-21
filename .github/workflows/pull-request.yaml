@@ -112,16 +112,10 @@ jobs:
           name: infracost
           path: ~/infracost
 
-      - name: find download file
-        run: ls -R ~/infracost
-
       - name: concat the infracost result
         working-directory: /home/runner/infracost/
         run: |
-          ls -R 
-          cat infracost-dev-us-east-1.json
-          cat infracost-stage-ap-southeast-1.json
-          infracost output -path "infracost-*.json" --format json --out-file /tmp/infracost.json
+          infracost output --path "infracost-*.json" --format json --out-file /tmp/infracost.json
 
       - name: Post Infracost comment
         run: |
