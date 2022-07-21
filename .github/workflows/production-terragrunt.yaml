@@ -8,7 +8,37 @@ on:
       - images/*
       - README.md
 jobs:
+  terragrunt-action-dev:
+    strategy:
+      matrix:
+        include:
+          - env-dir: dev
+            aws-region: us-east-1
+            aws-account-id: 733051034790
+            aws-role: terragrunt
+            aws: aws
+
+    name: terragrunt packages
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: terragrunt plan & apply
+        uses: ./.github/action/terragrunt-action
+        with:
+          role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
+          role-session-name: github-action
+          aws-region: ${{ matrix.aws-region }}
+          env-dir: ${{ matrix.env-dir }}
+
   terragrunt-action:
+    needs: 
+      - terragrunt-action-dev
     strategy:
       matrix:
         include:
@@ -29,7 +59,6 @@ jobs:
             aws-account-id: 594962198840
             aws-role: terragrunt
             aws: aws
-
 
     name: terragrunt packages
     runs-on: ubuntu-latest
