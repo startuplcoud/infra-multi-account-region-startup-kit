@@ -11,7 +11,8 @@ terraform {
 
 locals {
   role_arn_list = [
-    "arn:aws:iam::733051034790:role/terragrunt"
+    "arn:aws:iam::733051034790:role/terragrunt",
+    "arn:aws:iam::594962198840:role/terragrunt"
   ]
   user_arn_list = [
     "arn:aws:iam::733051034790:user/admin"

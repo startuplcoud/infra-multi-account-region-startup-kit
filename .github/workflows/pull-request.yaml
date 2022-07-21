@@ -56,6 +56,12 @@ jobs:
             aws-role: terragrunt
             aws: aws-cn
 
+          - env-dir: stage
+            aws-region: ap-southeast-1
+            aws-account-id: 594962198840
+            aws-role: terragrunt
+            aws: aws
+
     runs-on: ubuntu-latest
     continue-on-error: true
 
@@ -80,6 +86,54 @@ jobs:
           env-dir: ${{ matrix.env-dir }}
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
           create_pr: 'true'
+
+  infracost-report:
+    needs:
+      - terragrunt-infracost-action
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: write
+      actions: write
+      security-events: write
+      pull-requests: write
+    steps:
+      - name: Setup Infracost
+        # https://github.com/infracost/actions
+        # https://github.com/infracost/actions/tree/master/setup for other inputs
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: download-artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: infracost
+          path: ~/infracost
+
+      - name: find download file
+        run: ls -R ~/infracost
+
+      - name: concat the infracost result
+        working-directory: /home/runner/infracost/
+        run: |
+          ls -R 
+          cat infracost-dev-us-east-1.json
+          cat infracost-stage-ap-southeast-1.json
+          infracost output -path "infracost-*.json" --format json --out-file /tmp/infracost.json
+
+      - name: Post Infracost comment
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+                                      --repo=$GITHUB_REPOSITORY \
+                                      --github-token=${{ github.token }} \
+                                      --pull-request=${{ github.event.pull_request.number }} \
+                                      --behavior=update
+
+          
+
+
 
 
 

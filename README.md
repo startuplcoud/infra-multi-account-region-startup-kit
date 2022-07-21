@@ -130,7 +130,7 @@ In IAM → Identity providers → Add provider:
 Provider URL: `https://token.actions.githubusercontent.com`  
 
 Global Region:   
-Audience: `sts.amazoneaws.com`    
+Audience: `sts.amazonaws.com`    
 China Region:   
 Audience: 
 `sts.cn-north-1.amazonaws.com.cn`(Beijing Region)           
@@ -371,6 +371,17 @@ apply or plan the rds module, we must provide the gpg password to retrieve the d
 Firstly, need to create KMS key to generate the SOPS secret credentials, for multiple accounts, need to add the 
 inputs values with the account id IAM role arn or IAM user arn, we need to use a single KMS key to manage all the resources.
 Apply the kms_sops module to get the `kms_arn` output value, then create the `.sops.yaml` rules templates.
+
+terragunt role arn list and user arn list
+```hcl
+  role_arn_list = [
+    "arn:aws:iam::733051034790:role/terragrunt",
+    "arn:aws:iam::594962198840:role/terragrunt"
+  ]
+  user_arn_list = [
+    "arn:aws:iam::733051034790:user/admin"
+  ]
+```
 
 
     make apply-module directory=kms-global/us-east-1 module=kms_sops

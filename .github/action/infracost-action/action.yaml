@@ -55,7 +55,7 @@ runs:
 
     - name: terragrunt plan
       shell: bash
-      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-ignore-external-dependencies plan -out tfplan.binary
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all --terragrunt-non-interactive --terragrunt-ignore-external-dependencies plan -out tfplan.binary
 
     - name: check the infra cost
       shell: bash
@@ -87,39 +87,29 @@ runs:
         
         # Infracost CLI commands can be run now
         infracost breakdown --config-file=infracost-generated.yml 
-        infracost breakdown --config-file=infracost-generated.yml --format=json --out-file=/tmp/infracost.json
+        # generate 
+        infracost breakdown --config-file=infracost-generated.yml --format=json --out-file=/tmp/infracost-${{ inputs.env-dir }}-${{ inputs.aws-region }}.json
 
-#    - name: Generate Infracost diff
+    - name: archive the infracost result
+      uses: actions/upload-artifact@v3
+      with:
+        name: infracost
+        path: /tmp/infracost-${{ inputs.env-dir }}-${{ inputs.aws-region }}.json
+
+    
+
+
+#    - name: Post Infracost comment
 #      shell: bash
 #      env:
 #        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
 #      if: ${{ inputs.create_pr == 'true' }}
-#      continue-on-error: true
-#      # todo fix this issue
 #      run: |
-#        infracost diff --path=${TF_ROOT} \
-#                          --format=json \
-#                            --compare-to=/tmp/infracost-base.json \
-#                            --out-file=/tmp/infracost.json
-
-     # Posts a comment to the PR using the 'update' behavior.
-     # This creates a single comment and updates it. The "quietest" option.
-     # The other valid behaviors are:
-     #   delete-and-new - Delete previous comments and create a new one.
-     #   hide-and-new - Minimize previous comments and create a new one.
-     #   new - Create a new cost estimate comment on every push.
-     # See https://www.infracost.io/docs/features/cli_commands/#comment-on-pull-requests for other options.
-    - name: Post Infracost comment
-      shell: bash
-      env:
-        TF_ROOT: terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }}
-      if: ${{ inputs.create_pr == 'true' }}
-      run: |
-        infracost comment github --path=/tmp/infracost.json \
-                                    --repo=$GITHUB_REPOSITORY \
-                                    --github-token=${{github.token}} \
-                                    --pull-request=${{github.event.pull_request.number}} \
-                                    --behavior=update
+#        infracost comment github --path=/tmp/infracost.json \
+#                                    --repo=$GITHUB_REPOSITORY \
+#                                    --github-token=${{github.token}} \
+#                                    --pull-request=${{github.event.pull_request.number}} \
+#                                    --behavior=update
 
 
 
