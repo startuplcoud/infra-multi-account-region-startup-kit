@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "policy" {
     sid    = "Allow attachment of persistent resources"
     effect = "Allow"
     principals {
-      identifiers = concat(var.role_arn_list, var.user_arn_list)
+      identifiers = [data.aws_caller_identity.current.arn]
       type        = "AWS"
     }
     actions = [
