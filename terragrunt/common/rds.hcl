@@ -9,10 +9,9 @@ dependency "vpc" {
 }
 
 locals {
-  db_name     = "test"
-  identifier  = "test"
-  username    = "postgres"
-  environment = "development"
+  db_name    = "test"
+  identifier = "test"
+  username   = "postgres"
 }
 
 inputs = {
@@ -22,5 +21,4 @@ inputs = {
   username             = local.username
   db_name              = local.db_name
   identifier           = local.identifier
-  environment          = local.environment
 }

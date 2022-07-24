@@ -1,5 +1,5 @@
 data "aws_ami" "ubuntu" {
-  owners      = ["099720109477"]
+  owners      = [var.ami_owner_id]
   most_recent = true
   filter {
     name   = "name"
@@ -10,6 +10,5 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 }
-
 
 data "aws_availability_zones" "zones" {}

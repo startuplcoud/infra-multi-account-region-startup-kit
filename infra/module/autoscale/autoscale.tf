@@ -1,5 +1,5 @@
 resource "aws_launch_configuration" "configuration" {
-  name                        = var.name
+  name                        = var.autoscaling_name
   image_id                    = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   associate_public_ip_address = false
