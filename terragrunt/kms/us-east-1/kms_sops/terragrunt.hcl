@@ -20,7 +20,7 @@ locals {
 }
 
 inputs = {
-  key_alias     = "terragrunt-demo"
+  key_alias     = "terragrunt-startup"
   role_arn_list = local.role_arn_list
   user_arn_list = local.user_arn_list
 }
