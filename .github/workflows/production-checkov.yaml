@@ -10,14 +10,13 @@ on:
 
 jobs:
   checkov-action:
-    name: checkov terraform modules
+    name: checkov scan terraform modules
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
       security-events: write
       contents: read
       actions: read
-
       id-token: write
     steps:
       - name: Checkout repo
