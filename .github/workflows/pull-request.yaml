@@ -9,11 +9,10 @@ on:
 
 jobs:
   terrascan:
+    name: terrascan check terraform modules
+    continue-on-error: true
     runs-on: ubuntu-latest
-
     permissions:
-      id-token: read
-      actions: read
       security-events: write
 
     steps:
@@ -25,10 +24,9 @@ jobs:
         uses: ./.github/action/terrascan-action
 
   checkov:
-
+    name: checkov check terraform modules
+    continue-on-error: true
     permissions:
-      id-token: read
-      actions: read
       security-events: write
     runs-on: ubuntu-latest
     steps:
@@ -40,10 +38,9 @@ jobs:
         uses: ./.github/action/checkov-action
 
   tfsec:
-
+    name: tfsec check terraform modules
+    continue-on-error: true
     permissions:
-      id-token: read
-      actions: read
       security-events: write
 
     runs-on: ubuntu-latest
@@ -82,7 +79,7 @@ jobs:
     continue-on-error: true
 
     permissions:
-      id-token: read
+      id-token: write
       actions: read
     steps:
 
@@ -105,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: read
+      id-token: write
       contents: read
       actions: read
       pull-requests: write

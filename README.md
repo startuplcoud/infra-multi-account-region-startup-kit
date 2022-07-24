@@ -6,25 +6,27 @@
 
 Set up AWS infrastructure with terragrunt and terraform in multiple accounts and regions demo kit.  
 Goals:
-1. Provisioning AWS infrastructure with terraform and terragrunt.
+1. Provisioning AWS infrastructure resources with terraform and terragrunt.
 2. Support AWS with multiple accounts and regions.
 3. Running the CI/CD workflow pipeline in parallel.
-4. GitHub OIDC provider with AWS IAM role (without setting up AWS credentials' key)
-5. Pattern: Separate terraform modules, keep the minimum AWS resources, and reduce duplicated codes. 
+4. GitHub OIDC provider with AWS IAM role, no need to provide the AWS 
+credentials.
+5. Pattern: Separate terraform modules, keep the minimum AWS resources, avoid terraform state getting locked, and reduce duplicated codes. 
 6. Security solutions with vulnerability scan tools (tfsec, checkov, terrascan, etc.).
-7. Store the credentials key such as password in the git repository with SOPS.
-8. AWS Resources Cost estimates preview with Infracost.
+7. Store the secret values such as passwords in the git repository with SOPS.
+8. AWS Infrastructure cost estimate preview with Infracost.
 
 ## AWS Services Architecture
-This tutorial will show how to set up the AWS VPC and EC2 autoscaling group with the application load balancer and how to use the terraform & terragrunt to manage the AWS infrastructure.
+This tutorial will show how to set up the AWS VPC, RDS, and EC2 Autoscaling group, with the application load balancer and how to use the terraform & terragrunt to manage the AWS infrastructure.
 
 ### The Auto Scaling & ALB Architecture Diagram
 ![aws](images/aws.png)
 
 ### Terraform layout
-Try to separate the resources and use separate directories for each component and application.   
+Create Terraform separate modules to manage AWS resources, do **NOT** manage terraform states in terraform modules, and try to separate the AWS resources into different modules, such as AWS VPC only manage the AWS VPC resources.
 Useful links about Google best practices for [terraform](https://cloud.google.com/docs/terraform/best-practices-for-terraform#minimize-resources).  
-This tutorial separates the AWS resources into three modules, VPC & Auto Scaling & Application Load Balancer.
+
+This project terraform modules separate the AWS resources into four parts, VPC & Auto Scaling & RDS & Application Load Balancer.
 ```
 infra
 └── module
@@ -39,6 +41,11 @@ infra
     │   ├── data.tf
     │   ├── security.tf
     │   └── vars.tf
+    ├── rds
+    │   ├── main.tf
+    │   ├── outputs.tf
+    │   ├── security.tf
+    │   └── vars.tf
     └── vpc # vpc module
         ├── data.tf
         ├── main.tf
@@ -46,10 +53,12 @@ infra
         └── vars.tf
 ```
 ### Terragrunt layout
+Terragrunt is a thin wrapper around Terraform that provide remote state management, terraform modules dependencies, reduce 
+repetition and also support multiple AWS accounts and regions.
 
 ```
 .
-├── common # common configuration and input variables
+├── common # common configuration and input variables both can be used for the different env
 │ ├── alb.hcl
 │ ├── autoscale.hcl
 │ └── vpc.hcl
