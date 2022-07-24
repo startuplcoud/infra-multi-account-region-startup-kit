@@ -9,7 +9,7 @@ on:
       - README.md
 jobs:
   tfsec-action:
-    name: tfsec
+    name: tfsec check terraform modules
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
@@ -19,7 +19,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: tfsec terraform packages
+
+      - name: tfsec check terraform modules
         uses: ./.github/action/tfsec-action
         with:
           working_directory: "./infra/module"

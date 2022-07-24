@@ -11,15 +11,25 @@ jobs:
   terrascan:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: read
+      actions: read
+      security-events: write
+
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
 
-      - name: terrascan
+      - name: terrascan check
         continue-on-error: true
         uses: ./.github/action/terrascan-action
 
   checkov:
+
+    permissions:
+      id-token: read
+      actions: read
+      security-events: write
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
@@ -30,12 +40,18 @@ jobs:
         uses: ./.github/action/checkov-action
 
   tfsec:
+
+    permissions:
+      id-token: read
+      actions: read
+      security-events: write
+
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
 
-      - name: tfsec
+      - name: tfsec check
         continue-on-error: true
         uses: ./.github/action/tfsec-action
 
@@ -66,18 +82,14 @@ jobs:
     continue-on-error: true
 
     permissions:
-      id-token: write
-      contents: write
-      actions: write
-      security-events: write
-      pull-requests: write
-
+      id-token: read
+      actions: read
     steps:
 
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: infracost packages
+      - name: infracost estimates the cost
         uses: ./.github/action/infracost-action
         with:
           role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
@@ -93,10 +105,9 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: write
-      contents: write
-      actions: write
-      security-events: write
+      id-token: read
+      contents: read
+      actions: read
       pull-requests: write
     steps:
       - name: Setup Infracost

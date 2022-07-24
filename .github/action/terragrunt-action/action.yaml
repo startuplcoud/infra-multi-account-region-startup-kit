@@ -10,13 +10,13 @@ inputs:
   apply-terragrunt:
     default: 'false'
     required: false
-    description: apply the module or not
+    description: apply the terraform module or not
   env-dir:
     required: true
     description: directory with the aws account (mark) folder name
   aws-region:
     required: true
-    description: aws region name
+    description: aws region
 
 runs:
   using: "composite"
@@ -54,6 +54,6 @@ runs:
     - name: terragrunt apply
       shell: bash
       if: ${{ inputs.apply-terragrunt == 'true' }}
-      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all apply -auto-approve
-
+      # https://github.com/gruntwork-io/terragrunt/issues/486
+      run: cd terragrunt/${{ inputs.env-dir }}/${{ inputs.aws-region }} && terragrunt run-all apply --terragrunt-non-interactive -auto-approve
 

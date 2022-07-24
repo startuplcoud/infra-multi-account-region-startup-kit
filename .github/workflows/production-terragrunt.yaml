@@ -17,10 +17,9 @@ jobs:
             aws-account-id: 733051034790
             aws-role: terragrunt
             aws: aws
-
-    name: terragrunt packages
+    name: terragrunt aws dev environment deploy
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: false
     permissions:
       id-token: write
       contents: read
@@ -54,7 +53,7 @@ jobs:
             aws-role: terragrunt
             aws: aws
 
-    name: terragrunt packages
+    name: terragrunt prod & stage deploy
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:

@@ -1,5 +1,5 @@
-name: "checkov check the terraform module"
-description: checkov init and check
+name: "checkov check the terraform modules"
+description: checkov init and check terraform modules
 
 runs:
   using: "composite"
