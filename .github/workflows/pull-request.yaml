@@ -13,7 +13,6 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     permissions:
-      id-token: read
       security-events: write
 
     steps:
@@ -28,7 +27,6 @@ jobs:
     name: checkov check terraform modules
     continue-on-error: true
     permissions:
-      id-token: read
       security-events: write
     runs-on: ubuntu-latest
     steps:
@@ -43,7 +41,6 @@ jobs:
     name: tfsec check terraform modules
     continue-on-error: true
     permissions:
-      id-token: read
       security-events: write
 
     runs-on: ubuntu-latest
