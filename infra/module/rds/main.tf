@@ -38,7 +38,4 @@ module "postgres" {
   backup_window           = "12:00-13:00"
   backup_retention_period = 0
 
-  tags = {
-    Environment = var.environment
-  }
 }

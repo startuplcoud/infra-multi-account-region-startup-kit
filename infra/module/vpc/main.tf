@@ -28,13 +28,4 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.environment
-  }
-
-  default_vpc_tags = {
-    Name = var.vpc_name
-  }
-
 }

@@ -57,49 +57,57 @@ Terragrunt is a thin wrapper around Terraform that provide remote state manageme
 repetition and also support multiple AWS accounts and regions.
 
 ```
-.
-├── common # common configuration and input variables both can be used for the different env
+├── common # common configuration and input variables both can be used for the different aws account environment
 │ ├── alb.hcl
 │ ├── autoscale.hcl
+│ ├── rds.hcl
 │ └── vpc.hcl
-├── dev # development account id
-│ └── us-east-1 # only provisioning resources in us-east-1
+├── dev # development account environment folder
+│ └── us-east-1 # only provisioning AWS resources in us-east-1
 │     ├── env.yaml global configuration parameters
 │     ├── alb
 │     │ └── terragrunt.hcl
 │     ├── autoscale
 │     │ └── terragrunt.hcl
+│     ├── rds
+│     │ └── terragrunt.hcl
 │     └── vpc
-│       └── terragrunt.hcl
-├── prod # production account id 
-│ ├── cn-north-1 (AWS China region)
-│ │ ├── env.yaml
-│ │ ├── alb
-│ │ │ └── terragrunt.hcl
-│ │ ├── autoscale
-│ │ │ └── terragrunt.hcl
-│ │ └── vpc
-│ │   └── terragrunt.hcl
-│ └── cn-northwest-1
+│         └── terragrunt.hcl
+├── prod
+│ └── cn-north-1
 │     ├── env.yaml
 │     ├── alb
 │     │ └── terragrunt.hcl
 │     ├── autoscale
 │     │ └── terragrunt.hcl
+│     ├── rds
+│     │ └── terragrunt.hcl
 │     └── vpc
-│       └── terragrunt.hcl
-└── terragrunt.hcl (Global terragrunt configuration)
+│         └── terragrunt.hcl
+├── stage
+│ └── ap-southeast-1
+│     ├── env.yaml
+│     ├── rds
+│     │ └── terragrunt.hcl
+│     └── vpc
+│         └── terragrunt.hcl
+├── secrets.global.yaml # sops generate secret values in global conguration
+├── .sops.yaml # sops configuration
+└── terragrunt.hcl # Global terragrunt configuration
+
 ```
 
-### Global Variable and auto generate for the global providers.
+### Global Variable and terragrunt auto generate for the global providers.
 In the `env.yaml`, for the different region and accounts
-we need to set the AWS account id and region variables.
+we need to set the AWS account id and region variables or env common variables 
 #### Global env.yaml
 ```
 aws_region: us-east-1
-account_id: xxxxxxxxx
+account_id: xxxxxxx
+environment: dev
+project: xxxx
 ```
-#### terragrunt.hcl global provider
+#### terragrunt.hcl global 
 In the global terragrunt file, we can retrieve the `aws_region` and `account_id` in the `env.yaml`.
 ```hcl
 locals {
@@ -109,7 +117,7 @@ locals {
   account_id = local.env_vars["account_id"]
 }
 ```
-then, in the auto generate provider syntax, so it will generate the `providers.tf` in each terraform module,
+then, in the auto generate provider syntax, it will generate the `providers.tf` in each terraform module, and
 the provider already strict the AWS region and account.
 ```hcl
 generate "providers" {
@@ -126,8 +134,8 @@ EOF
 
 ## Github OIDC with AWS IAM role.
 Assume roles in AWS using an OpenID Connect identity provider.
-In AWS, we can register GitHub as an Identity Provider, and then the JWT generated 
-by GitHub is allowed to access AWS account.
+In AWS, we can register GitHub action provider as an Identity Provider, and then the JWT generated 
+by GitHub action is allowed to access AWS account.
 ![OIDC](images/github_oidc.png)
 
 ### Set up AWS IAM role & policies
@@ -138,10 +146,10 @@ In IAM → Identity providers → Add provider:
 
 Provider URL: `https://token.actions.githubusercontent.com`  
 
-Global Region:   
-Audience: `sts.amazonaws.com`    
-China Region:   
-Audience: 
+Global Region Audience: 
+`sts.amazonaws.com`    
+China Region Audience:
+
 `sts.cn-north-1.amazonaws.com.cn`(Beijing Region)           
 `sts.cn-northwest-1.amazonaws.com.cn` (Ningxia Region)
 
@@ -152,9 +160,8 @@ Add the `AdministratorAccess` permission
 ![role2](images/role2.png)
 
 For policy also need to add the `"token.actions.githubusercontent.com:sub": "repo:{gituser}/{gitrepo}:ref:refs/heads/xxx"`,
-`xxx` means the branch name.
-this is used for to grant the boundary of git repository.
-Global Region policy:
+`xxx` means the branch name in order to grant the boundary of the git repository.
+AWS Global Region policy:
 ```json
 {
     "Version": "2012-10-17",
@@ -176,7 +183,7 @@ Global Region policy:
     ]
 }
 ```
-AWS China region policy
+AWS China region policy:
 ```json
 {
     "Version": "2012-10-17",
@@ -189,7 +196,8 @@ AWS China region policy
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
                 "StringEquals": {
-                   "token.actions.githubusercontent.com:aud": ["sts.cn-north-1.amazonaws.com.cn","sts.cn-northwest-1.amazonaws.com.cn"],
+                   "token.actions.githubusercontent.com:aud": ["sts.cn-north-1.amazonaws.com.cn",
+                                                               "sts.cn-northwest-1.amazonaws.com.cn"],
                    "token.actions.githubusercontent.com:sub": ["repo:{gituser}/{gitrepo}:ref:refs/heads/xxx",
                                                                "repo:{gituser}/{gitrepo}:pull_request"]
                 }
@@ -209,7 +217,7 @@ AWS China region policy
     role-session-name: github-action
     aws-region: us-east-1
 ```
-after the actions execute, the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` will automatically register in the global environment.
+After the action executes, the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` will automatically register in the global environment.
 
 ![github](images/github.png)
 

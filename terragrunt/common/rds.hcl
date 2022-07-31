@@ -1,3 +1,10 @@
+terraform {
+  source = "../../../..//infra/module/rds"
+  extra_arguments "common_vars" {
+    commands = get_terraform_commands_that_need_vars()
+  }
+}
+
 dependency "vpc" {
   config_path = "${get_original_terragrunt_dir()}/..//vpc"
   mock_outputs = {

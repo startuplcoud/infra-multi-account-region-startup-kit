@@ -1,3 +1,5 @@
+data "aws_availability_zones" "zones" {}
+
 data "aws_ami" "ubuntu" {
   owners      = [var.ami_owner_id]
   most_recent = true
@@ -11,4 +13,3 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-data "aws_availability_zones" "zones" {}

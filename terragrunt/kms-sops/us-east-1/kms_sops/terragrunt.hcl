@@ -3,7 +3,7 @@ include {
 }
 
 terraform {
-  source = "../../../..//infra/env/kms_sops"
+  source = "../../../..//infra/global-config/kms_sops"
   extra_arguments "common_vars" {
     commands = get_terraform_commands_that_need_vars()
   }
@@ -11,7 +11,6 @@ terraform {
 
 locals {
   role_arn_list = [
-    "arn:aws:iam::733051034790:role/terragrunt",
     "arn:aws:iam::594962198840:role/terragrunt"
   ]
   user_arn_list = [
