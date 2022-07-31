@@ -217,40 +217,40 @@ AWS China region policy:
     role-session-name: github-action
     aws-region: us-east-1
 ```
-After the action executes, the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` will automatically register in the global environment.
+After the action executes, the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` will automatically register in the github action global environment.
 
 ![github](images/github.png)
 
 
 ## Run CI/CD pipeline in parallel
-This post will show how to use the `strategy.matrix` to significantly reduce the time on Github workflows.
+How to use the GitHub action `strategy.matrix` to significantly reduce the time on GitHub workflows.
 `strategy.matrix` syntax allows creating multiple jobs by performing variable substitution in a single job definition.
-Check the useful links for more details about the [github job matrix](https://docs.github.com/cn/actions/using-jobs/using-a-matrix-for-your-jobs).
+Check the useful links for more details about the [GitHub Job Matrix](https://docs.github.com/cn/actions/using-jobs/using-a-matrix-for-your-jobs).
 
 ```yaml
 strategy:
   matrix:
     include:
-      - env: dev
+      - env-dir: dev # the terragrunt dev folder
         aws-region: us-east-1
         aws-account-id: xxxxxxx
         aws-role: xxxxxx
-        aws: aws
-      - env: prod
+        aws: aws # aws_partition 
+      - env-dir: prod
         aws-region: cn-north-1
         aws-account-id: xxxxx
         aws-role: xxxx
         aws: aws-cn
-      - env: prod
+      - env-dir: prod
         aws-region: cn-northwest-1
         aws-account-id: xxxxx
         aws-role: xxxx
-        aws: aws-cn
+        aws: aws-cn # aws_partition 
 ```
-for parameters combinations will result in 3 jobs:
-1. `{env: dev, aws-region: us-east-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws}`
-2. `{env: prod, aws-region: cn-north-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws-cn}`
-3. `{env: prod, aws-region: cn-northwest-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws-cn}`
+For parameters combinations will result in 3 jobs:
+1. `{env-dir: dev, aws-region: us-east-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws}`
+2. `{env-dir: prod, aws-region: cn-north-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws-cn}`
+3. `{env-dir: prod, aws-region: cn-northwest-1, aws-account-id: xxxxx, aws-role: xxxx, aws: aws-cn}`
 then the job will dynamically fill the `matrix` values in the `with` sections.
 ```yaml
  steps:
@@ -262,26 +262,28 @@ then the job will dynamically fill the `matrix` values in the `with` sections.
       role-to-assume: arn:${{ matrix.aws }}:iam::${{ matrix.aws-account-id }}:role/${{ matrix.aws-role }}
       role-session-name: github-action
       aws-region: ${{ matrix.aws-region }}
-      env: ${{ matrix.env }}
+      env: ${{ matrix.env-dir }}
 ```
 
 ## Terragrunt best practices
-### reduce duplicated code
- 1. Using multiple `include` blocks to DRY common terragrunt configuration.
+ 1. Using multiple `include` blocks to DRY common terragrunt configuration to reduce duplicated code.
  2. Using deep merge to DRY nested attributes.
- 3. Using expose includes to override common configuration variables.
- 4. Reducing duplicated code blocks such as `inputs` or `dependency` for each terragrunt modules.
+ 3. Using expose includes overriding common configuration variables.
+ 4. Reducing duplicated code blocks such as `inputs` or `dependency` for each terragrunt module.
 ```hcl
 include "common" {
   path   = "${dirname(find_in_parent_folders())}/common/alb.hcl"
   expose = true
 }
 ```
-### apply one module
+### apply module
 ```shell
 terragrunt run-all plan --terragrunt-include-dir $(directory)
 ```
-
+### destroy module
+```shell
+terragrunt run-all destroy --terragrunt-working-dir $(directory)
+```
 
 ## Security Tips 
 ### Encrypt terraform states in S3 bucket and Dynamodb
@@ -484,25 +486,26 @@ locals {
 ```
     
 
-### Terraform code Vulnerability scan with GitHub Action
+### Terraform code Vulnerability scan tools
+Vulnerability tools:
+1. [tfsec](https://github.com/aquasecurity/tfsec)
+2. [terrascan](https://github.com/tenable/terrascan)
+3. [checkov](https://github.com/bridgecrewio/checkov)
 
-In the pull request github action, after analysis terraform code, 
+In the pull request GitHub action, after analyzing terraform code, 
 the analysis result will automatically upload to the Github security adviser.
-For the better security solutions, we can use the vulnerability scan tools, such as
-[tfsec](https://github.com/aquasecurity/tfsec)
-[terrascan](https://github.com/tenable/terrascan)
-[checkov](https://github.com/bridgecrewio/checkov)
 
-## Cost Preview in the Pull Request
-Cost estimates for Terraform with Infracost https://www.infracost.io/.
-How to estimate the aws resources we will spend for month,
-we can use the infracost to generate the total summary of the aws resources.
-directly check this PR,
+
+## AWS Resources Cost Preview in the Pull Request
+Cost estimates with [Infracost](https://www.infracost.io/).
+
+How to estimate the AWS resources will spend for a month, use the Infracost to generate the total summary of the AWS resources.
+Directly check this Pull Request,
 https://github.com/startuplcoud/infra-multi-account-region-startup-kit/pull/5
 
 ## Contact
 
-If you have any question, please contact with the email contact@startupcloud.tech
+If you have any questions, please contact with the email contact@startupcloud.tech
 
 
 

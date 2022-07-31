@@ -29,7 +29,7 @@ apply-module:
 	cd terragrunt/$(directory) && terragrunt run-all apply --terragrunt-include-dir $(module)
 
 destroy-module:
-	cd terragrunt/$(directory) && terragrunt run-all destroy --terragrunt-include-dir $(module)
+	cd terragrunt/$(directory) && terragrunt run-all destroy --terragrunt-working-dir $(module)
 
 clean-cache:
 	find . -type d -name ".terragrunt-cache" -prune -exec rm -rf {} \;
