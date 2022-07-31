@@ -3,6 +3,7 @@ locals {
   aws_region   = local.env_vars["aws_region"]
   project_name = local.env_vars["project"]
   account_id   = local.env_vars["account_id"]
+  environment  = local.env_vars["environment"]
 }
 
 generate "providers" {
@@ -11,10 +12,12 @@ generate "providers" {
   contents  = <<EOF
 provider "aws" {
   region = "${local.aws_region}"
-  allowed_account_ids  = [ "${local.account_id}" ]
+  allowed_account_ids  = ["${local.account_id}"]
   default_tags {
    tags = {
       project  = "${local.project_name}"
+      environment = "${local.environment}"
+      terraform = "true"
    }
   }
 }
@@ -35,9 +38,5 @@ remote_state {
     dynamodb_table = "${local.project_name}-terraform-lock-table"
   }
 }
-
-inputs = merge(
-  local.env_vars
-)
 
 

@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "policy" {
     sid    = "Allow use of the key"
     effect = "Allow"
     principals {
-      identifiers = concat(var.role_arn_list, var.user_arn_list)
+      identifiers = concat([data.aws_caller_identity.current.arn], var.role_arn_list, var.user_arn_list)
       type        = "AWS"
     }
     actions = [
