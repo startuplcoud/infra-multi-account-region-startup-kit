@@ -426,7 +426,7 @@ locals {
 
 Apply or plan the rds module, we must provide the gpg password to retrieve the encrypted yaml.
 
-#### set up the AWS IAM role and PGP
+### set up the AWS IAM role and PGP
 
 1. Create a KMS key using the SOPS to encrypt & decrypt the sensitive values.
 2. For multiple regions take effects need to enable the multiple region option.
@@ -435,7 +435,7 @@ Apply or plan the rds module, we must provide the gpg password to retrieve the e
 5. For different env (accounts) or regions (AWS China or global region), create the SOPS rules `.sops.yaml` to generate different environment configuration.
 7. Make sure the GitHub action IAM role and user role have the permission to encrypt or decrypt with the KMS key.
 
-##### apply terragrunt module to generate AWS KMS key
+#### apply terragrunt module to generate AWS KMS key
 
 Using terraform and terragrunt to create KMS key to generate the SOPS secret credentials.
 If we want to use a single KMS key that can be encrypted in multiple accounts, add the other AWS account IAM role arn
@@ -465,7 +465,7 @@ Copy the GPG value with this command `gpg --fingerprint 365504029@qq.com`
     uid             [ uid ] winton <365504029@qq.com>
     sub   cv25519 2022-07-18 [E] [expires：2024-07-17]
 
-##### create `.sops.yaml` rules with KMS key & PGP
+#### create `.sops.yaml` rules with KMS key & PGP
 
 ```yaml
 creation_rules:
@@ -481,14 +481,13 @@ creation_rules:
 
 ```
 
-##### generate secrets.global.yaml
+#### generate secrets.global.yaml
 
 Create file name extension must match the regex pattern `.global.yaml`
 
 ```shell
 AWS_PROFILE=terragrunt sops secrets.global.yaml
 ```
-
 
 edit the secret values in the yaml file:
 
@@ -533,7 +532,7 @@ sops:
   version: 3.7.3
 ```
 
-Retrieve the `db_password` value with terragrunt.
+#### Retrieve the `db_password` value with terragrunt.
 
 ```hcl
 locals {
