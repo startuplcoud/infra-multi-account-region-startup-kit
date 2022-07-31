@@ -16,7 +16,7 @@ module "postgres" {
   option_group_name               = "default:postgres-14"
   major_engine_version            = "14"
 
-  db_subnet_group_name            = "${var.identifier}-${var.environment}-private-subnets"
+  db_subnet_group_name            = "${var.identifier}-private-subnets"
   db_subnet_group_description     = "${var.identifier} only access from the subnet"
   create_db_subnet_group          = true
   db_subnet_group_use_name_prefix = false
@@ -24,7 +24,7 @@ module "postgres" {
   db_name  = var.db_name # create database name
   username = var.username
 
-  identifier             = "${var.identifier}-${var.environment}"
+  identifier             = var.identifier
   port                   = 5432
   password               = var.password # store in the states
   create_random_password = false

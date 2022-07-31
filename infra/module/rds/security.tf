@@ -1,6 +1,6 @@
 module "security_group" {
   source          = "terraform-aws-modules/security-group/aws"
-  name            = "${var.identifier}-${var.environment}-rds-security-group"
+  name            = "${var.identifier}-rds-security-group"
   description     = "PostgreSQL security group"
   vpc_id          = var.vpc_id
   use_name_prefix = false
