@@ -62,18 +62,21 @@ jobs:
             aws-account-id: 733051034790
             aws-role: terragrunt
             aws: aws
+            aws-audience: sts.amazonaws.com
 
           - env-dir: prod
             aws-region: cn-northwest-1
             aws-account-id: 527109613237
             aws-role: terragrunt
             aws: aws-cn
+            aws-audience: sts.cn-northwest-1.amazonaws.com.cn
 
           - env-dir: stage
             aws-region: ap-southeast-1
             aws-account-id: 594962198840
             aws-role: terragrunt
             aws: aws
+            aws-audience: sts.amazonaws.com
 
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -93,6 +96,7 @@ jobs:
           role-session-name: github-action
           aws-region: ${{ matrix.aws-region }}
           env-dir: ${{ matrix.env-dir }}
+          aws-audience: ${{ matrix.aws-audience }}
           infracost_api_key: ${{ secrets.INFRACOST_API_KEY }}
           create_pr: 'true'
 
