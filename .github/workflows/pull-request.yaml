@@ -64,7 +64,7 @@ jobs:
             aws: aws
 
           - env-dir: prod
-            aws-region: cn-north-1
+            aws-region: cn-northwest-1
             aws-account-id: 527109613237
             aws-role: terragrunt
             aws: aws-cn

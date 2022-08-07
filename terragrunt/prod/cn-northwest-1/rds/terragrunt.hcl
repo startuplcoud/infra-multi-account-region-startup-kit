@@ -8,10 +8,10 @@ include "common" {
 }
 
 locals {
-  secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.global.yaml"))["prod"]
+  secrets     = yamldecode(sops_decrypt_file("${dirname(find_in_parent_folders())}/secrets.china.yaml"))["prod"]["cn-northwest-1"]
   db_password = local.secrets["db_password"]
 }
 
 inputs = {
-  db_password = local.secrets["db_password"]
+  db_password = local.db_password
 }
