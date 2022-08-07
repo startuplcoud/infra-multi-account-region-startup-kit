@@ -3,6 +3,10 @@ variable "key_alias" {
   default = "terragrunt"
 }
 
+variable "multi_region" {
+  type    = bool
+  default = true
+}
 
 variable "role_arn_list" {
   type    = list(string)

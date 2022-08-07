@@ -9,5 +9,5 @@ creation_rules:
     # aws china region
   - path_regex: \.china\.yaml$
 #    aws_profile: wwc
-    kms: 'arn:aws:kms:ap-southeast-1:733051034790:key/mrk-f24f28b41b0d49419df429946e7747d9'
+    kms: 'arn:aws-cn:kms:cn-northwest-1:527109613237:key/d315eb9b-99a3-446b-b105-fd0126d10b0e'
     pgp: '01D0D800C76AC893E74990B44BB1CE513349E336'

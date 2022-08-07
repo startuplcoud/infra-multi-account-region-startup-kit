@@ -9,6 +9,14 @@ terraform {
   }
 }
 
+locals {
+  role_arn_list = [
+    "arn:aws-cn:iam::527109613237:role/terragrunt"
+  ]
+}
+
 inputs = {
-  key_alias = "terragrunt-demo"
+  multi_region  = false
+  key_alias     = "terragrunt-startup"
+  role_arn_list = local.role_arn_list
 }

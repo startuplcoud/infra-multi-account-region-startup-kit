@@ -1,6 +1,10 @@
 name: "terragrunt plan and apply"
 description: terragrunt validate and apply terraform
 inputs:
+  aws-audience:
+    required: false
+    description: "AWS Audience"
+    default: sts.amazonaws.com
   role-to-assume:
     required: true
     description: "AWS IAM role"
@@ -42,6 +46,7 @@ runs:
         role-to-assume: ${{ inputs.role-to-assume }}
         role-session-name: ${{ inputs.role-session-name }}
         aws-region: ${{ inputs.aws-region }}
+        audience: ${{ inputs.aws-audience }}
 
     - name: terragrunt validate
       shell: bash

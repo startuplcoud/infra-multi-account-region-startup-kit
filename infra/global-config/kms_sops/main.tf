@@ -1,5 +1,5 @@
 resource "aws_kms_key" "key" {
-  multi_region             = true
+  multi_region             = var.multi_region
   key_usage                = "ENCRYPT_DECRYPT"
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   deletion_window_in_days  = 7

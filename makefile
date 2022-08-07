@@ -1,5 +1,5 @@
 SHELL := /usr/bin/env bash
-export AWS_PROFILE=terragrunt
+export AWS_PROFILE=$(aws_profile)
 export TF_PLUGIN_CACHE_DIR=$(HOME)/.terraform.d/plugin-cache
 
 init:
