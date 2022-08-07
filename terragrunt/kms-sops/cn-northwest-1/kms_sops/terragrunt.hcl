@@ -16,7 +16,7 @@ locals {
 }
 
 inputs = {
-  multi_region = false
+  multi_region  = false
   key_alias     = "terragrunt-startup"
   role_arn_list = local.role_arn_list
 }

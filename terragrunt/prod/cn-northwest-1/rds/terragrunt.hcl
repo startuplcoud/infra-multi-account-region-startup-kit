@@ -13,5 +13,5 @@ locals {
 }
 
 inputs = {
-  db_password = local.db_password
+  password = local.db_password
 }

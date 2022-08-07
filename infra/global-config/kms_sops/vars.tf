@@ -4,7 +4,7 @@ variable "key_alias" {
 }
 
 variable "multi_region" {
-  type = bool
+  type    = bool
   default = true
 }
 
