@@ -1,6 +1,6 @@
 module "load_balancer_security" {
   source          = "terraform-aws-modules/security-group/aws"
-  version         = "4.10.0"
+  version         = "4.13.0"
   name            = "${var.service_name}-load-balancer-group"
   description     = "${var.service_name} load balancer security group"
   vpc_id          = var.vpc_id
