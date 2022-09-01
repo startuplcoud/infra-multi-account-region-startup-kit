@@ -8,6 +8,11 @@ variable "instance_type" {
   default = "t4g.small"
 }
 
+variable "user_data" {
+  type    = map(string)
+  default = {}
+}
+
 variable "vpc_id" {
   type = string
 }

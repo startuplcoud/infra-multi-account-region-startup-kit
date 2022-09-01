@@ -313,6 +313,26 @@ include "common" {
 }
 ```
 
+## EC2 instance cloud-init UserData setup With Terragrunt
+If we want to pass the `cloud init` as the userdata variable, what's an easier way to resolve it.
+We can use the terragrunt `before_hook` copy the new `cloud init` file in the terragrunt directory.
+Create a new `init.yaml` in the terragrunt submodule directory, then copy the new `init.yaml` file to replace  
+terraform original one.
+```hcl
+terraform {
+  source = "../../../..//infra/module/autoscale"
+  extra_arguments "common_vars" {
+    commands = get_terraform_commands_that_need_vars()
+  }
+  before_hook "cloud-init" {
+    commands  = ["apply","plan"]
+    execute =   ["cp", "${get_original_terragrunt_dir()}/config/init.yaml",  "./config/init.yaml"]
+    run_on_error = false
+  }
+}
+```
+
+
 ### apply module
 
 ```shell
