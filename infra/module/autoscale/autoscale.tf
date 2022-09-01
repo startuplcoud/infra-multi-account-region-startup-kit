@@ -3,9 +3,15 @@ resource "aws_launch_configuration" "configuration" {
   image_id                    = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   associate_public_ip_address = false
-  user_data                   = data.template_cloudinit_config.init_config.rendered
+  user_data                   = base64encode(templatefile("${path.module}/config/init.yaml", var.user_data))
   key_name                    = var.ssh_key
   security_groups             = [module.load_balancer_security.security_group_id]
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+  }
 
   lifecycle {
     create_before_destroy = true
