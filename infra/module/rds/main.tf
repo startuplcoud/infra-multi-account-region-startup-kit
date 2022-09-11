@@ -1,6 +1,6 @@
 module "postgres" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "5.0.3"
+  version = "5.1.0"
 
   engine                = "postgres"
   engine_version        = "14.2"
