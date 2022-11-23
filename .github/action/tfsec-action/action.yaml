@@ -12,7 +12,7 @@ runs:
     - name: setup tfsec
       # https://github.com/aquasecurity/tfsec-action
 
-      uses: aquasecurity/tfsec-sarif-action@v0.1.3
+      uses: aquasecurity/tfsec-sarif-action@v0.1.4
       with:
         sarif_file: tfsec.sarif
         working_directory: ${{ inputs.working_directory }}
