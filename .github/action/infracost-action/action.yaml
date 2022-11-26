@@ -37,7 +37,7 @@ runs:
     - name: Setup Terragrunt
       uses: autero1/action-terragrunt@v1.2.0
       with:
-        terragrunt_version: 0.37.3
+        terragrunt_version: latest
 
     - name: Sops Binary Installer
       uses: mdgreenwald/mozilla-sops-action@v1.3.0
