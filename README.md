@@ -345,6 +345,34 @@ terragrunt run-all plan --terragrunt-include-dir $(directory)
 terragrunt run-all destroy --terragrunt-working-dir $(directory)
 ```
 
+### unlock module
+
+What if terraform module get locked by accidentally.
+
+```
+Error: Error locking state: Error acquiring the state lock: ConditionalCheckFailedException: The conditional request failed
+Lock Info:
+ID:        9db590f1-b6fe-c5f2-2678-8804f089deba
+Path:      ...
+Operation: OperationTypePlan
+Who:       ...
+Version:   0.12.25
+Created:   2020-05-29 12:52:25.690864752 +0000 UTC
+Info:      
+Terraform acquires a state lock to protect the state from being written
+by multiple users at the same time. Please resolve the issue above and try
+again. For most commands, you can disable locking with the "-lock=false"
+flag, but this is not recommended.
+```
+
+unlock the module: directory is the path of the lock module. `lock_id` should be 
+the Lock Info `ID`.
+```bash 
+cd terragrunt/$(directory) && terragrunt force-unlock $(lock_id)
+```
+
+
+
 ## Security Tips
 
 ### Encrypt terraform states in S3 bucket and Dynamodb

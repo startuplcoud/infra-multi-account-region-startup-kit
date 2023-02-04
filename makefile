@@ -31,6 +31,9 @@ apply-module:
 destroy-module:
 	cd terragrunt/$(directory) && terragrunt run-all destroy --terragrunt-working-dir $(module)
 
+unlock:
+	cd terragrunt/$(directory) && terragrunt force-unlock $(lock_id)
+
 clean-cache:
 	find . -type d -name ".terragrunt-cache" -prune -exec rm -rf {} \;
 
