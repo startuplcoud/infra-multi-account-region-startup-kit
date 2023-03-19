@@ -41,7 +41,7 @@ runs:
         version: 'v3.7.3' # default is latest stable
 
     - name: GitHub OIDC Auth to assume AWS Role
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ inputs.role-to-assume }}
         role-session-name: ${{ inputs.role-session-name }}
