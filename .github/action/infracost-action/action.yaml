@@ -52,7 +52,7 @@ runs:
         api-key: ${{ inputs.infracost_api_key }}
 
     - name: GitHub OIDC Auth to assume AWS IAM Role
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ inputs.role-to-assume }}
         role-session-name: ${{ inputs.role-session-name }}
