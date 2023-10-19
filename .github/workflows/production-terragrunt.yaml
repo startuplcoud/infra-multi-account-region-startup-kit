@@ -25,7 +25,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terragrunt plan & apply
         uses: ./.github/action/terragrunt-action
@@ -64,7 +64,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: terragrunt plan & apply
         uses: ./.github/action/terragrunt-action
