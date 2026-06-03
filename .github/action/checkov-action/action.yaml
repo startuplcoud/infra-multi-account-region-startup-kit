@@ -14,7 +14,7 @@ runs:
         container_user: 1000
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: results.sarif
         category: checkov
